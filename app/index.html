@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#2f2f2f" />
+  <link rel="manifest" href="manifest.json" />
+  <title>Breathwork Timer</title>
+  <style>
+    :root{--bg:#2f2f2f;--panel:#3a3a3a;--panel2:#444;--text:#d8d8d8;--muted:#a8a8a8;--button:#555;--hover:#666;--accent:#cfcfcf;--shadow:rgba(0,0,0,.35)}
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    body{min-height:100vh;display:flex;justify-content:center;overflow-x:hidden}
+    .app{width:min(960px,100%);min-height:100vh;padding:18px;display:grid;grid-template-rows:auto 1fr auto;gap:18px}
+    header,.session-topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    h1{margin:0;font-size:clamp(1.35rem,4vw,2rem)}
+    .icon-button{border:1px solid #6a6a6a;border-radius:999px;background:var(--button);color:var(--text);width:46px;height:46px;font-size:1.15rem;cursor:pointer;box-shadow:0 6px 18px var(--shadow);flex:0 0 auto}
+    button,input{border:1px solid #6b6b6b;border-radius:14px;background:var(--button);color:var(--text);padding:12px 14px;font:inherit}
+    button{cursor:pointer;font-weight:650;box-shadow:0 6px 16px var(--shadow)}
+    button:hover,.icon-button:hover{background:var(--hover)}
+    main{display:grid;gap:18px;align-content:start}
+    .timer-card{min-height:42vh;border-radius:28px;background:radial-gradient(circle at center,rgba(255,255,255,.06),transparent 56%),var(--panel);box-shadow:0 20px 50px var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;position:sticky;top:12px;z-index:5}
+    .phase{color:var(--muted);font-size:clamp(1.25rem,4vw,2rem);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+    .countdown{line-height:.9;font-size:clamp(7.5rem,34vw,18rem);font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums;text-shadow:0 10px 35px rgba(0,0,0,.38)}
+    .pattern-name{margin-top:12px;color:var(--accent);font-size:clamp(1.15rem,4vw,1.65rem);font-weight:700}.pattern-times{margin-top:4px;color:var(--muted);font-size:clamp(.95rem,3vw,1.15rem);font-variant-numeric:tabular-nums}
+    .controls{display:flex;gap:10px;width:100%;margin-top:20px}
+    button.primary{width:100%;background:#6a6a6a;border-color:#8a8a8a;font-size:1.1rem;padding:15px 18px}
+    button.stop{background:#585858}
+    .settings{display:grid;gap:14px}
+    .panel{border-radius:22px;background:var(--panel);padding:16px;box-shadow:0 12px 34px var(--shadow)}
+    .panel h2{margin:0 0 12px;font-size:1.1rem;color:var(--accent)}
+    .custom-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+    label{display:grid;gap:6px;color:var(--muted);font-size:.9rem}
+    input{width:100%;font-size:1.1rem;font-variant-numeric:tabular-nums}
+    .hint{color:var(--muted);line-height:1.45;margin:10px 0 0;font-size:.95rem}
+    code{color:var(--accent);background:rgba(255,255,255,.07);padding:.08rem .25rem;border-radius:6px}
+    footer{color:var(--muted);text-align:center;font-size:.9rem;padding-bottom:10px}
+    .menu{position:fixed;inset:0;z-index:50;background:var(--bg);color:var(--text);transform:translateX(-100%);transition:transform .22s ease;padding:18px;display:grid;grid-template-rows:auto 1fr;gap:16px;overflow-y:auto}
+    .menu.open{transform:translateX(0)}
+    .menu-header{display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;background:var(--bg);padding-bottom:10px;z-index:2}
+    .menu-title-wrap{display:flex;align-items:center;gap:10px;min-width:0}
+    .menu h2{margin:0;font-size:clamp(1.4rem,6vw,2.4rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .menu-page{display:none;align-content:start}.menu-page.active{display:grid;gap:12px}
+    .menu-list,.preset-grid,.voice-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;align-content:start}
+    .menu-choice,.preset,.voice-card{text-align:left;background:var(--panel);border-radius:18px;padding:16px;min-height:104px}
+    .menu-choice strong,.preset strong,.voice-card strong{display:block;font-size:1.08rem;color:var(--accent);margin-bottom:6px}
+    .menu-choice span,.preset span,.voice-card span{display:block;color:var(--muted);font-size:.95rem;line-height:1.38;font-weight:450}
+    .preset small,.voice-card small{display:block;color:var(--text);margin-top:10px;font-variant-numeric:tabular-nums}
+    .selected-pill{display:inline-block;margin-top:10px;padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.1);color:var(--accent);font-size:.8rem}
+    .session-topbar{display:none;position:fixed;top:0;left:0;right:0;padding:14px;z-index:20;background:linear-gradient(to bottom,rgba(47,47,47,.98),rgba(47,47,47,.65),transparent)}
+    .session-stats{color:var(--accent);font-variant-numeric:tabular-nums;font-size:clamp(.95rem,3.5vw,1.2rem);line-height:1.25}
+    body.session-active .app{width:100%;padding:0;display:block}
+    body.session-active header,body.session-active .settings,body.session-active footer,body.session-active .pattern-name{display:none}
+    body.session-active main{display:block;min-height:100vh}
+    body.session-active .session-topbar{display:flex}
+    body.session-active .timer-card{min-height:100vh;width:100%;border-radius:0;position:static;box-shadow:none;padding:88px 18px 24px;background:radial-gradient(circle at center,rgba(255,255,255,.07),transparent 58%),var(--bg)}
+    body.session-active .countdown{font-size:clamp(10rem,44vw,25rem)}
+    body.session-active .phase{font-size:clamp(1.4rem,5vw,2.4rem)}
+    body.session-active .controls {
+      position: fixed;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      z-index: 25;
+      margin: 0;
+
+      display: block;        /* prevents flex overflow */
+      width: auto;           /* ensures it respects left/right */
+      max-width: calc(100% - 28px); /* safety clamp */
+    }
+    @media(max-width:640px){.app{padding:12px;gap:12px}.timer-card{min-height:43vh;border-radius:22px}.custom-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.menu{padding:12px}.menu-list,.preset-grid,.voice-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="menu" id="menu" aria-hidden="true">
+    <div class="menu-header">
+      <div class="menu-title-wrap">
+        <button id="backMenuButton" class="icon-button" type="button" aria-label="Back">‹</button>
+        <h2 id="menuTitle">Menu</h2>
+      </div>
+      <button id="closeMenuButton" class="icon-button" type="button" aria-label="Close menu">×</button>
+    </div>
+    <div id="menuHome" class="menu-page active">
+      <div class="menu-list">
+        <button id="breathingPatternsButton" class="menu-choice" type="button"><strong>Breathing pattern</strong><span>Choose a predefined rhythm according to how you feel in the moment.</span></button>
+        <button id="chooseVoiceButton" class="menu-choice" type="button"><strong>Choose voice</strong><span>Select Heart, Velvet, or Light for the spoken guidance.</span></button>
+      </div>
+    </div>
+    <div id="patternsPage" class="menu-page"><div id="presetGrid" class="preset-grid"></div></div>
+    <div id="voicesPage" class="menu-page"><div id="voiceGrid" class="voice-grid"></div></div>
+  </div>
+
+  <div class="session-topbar" aria-live="polite">
+    <div class="session-stats"><div id="durationDisplay">00:00</div><div id="breathCounterDisplay">0 breaths</div></div>
+    <button id="sessionMuteButton" class="icon-button" type="button" aria-label="Mute voice and chimes">🔊</button>
+  </div>
+
+  <div class="app">
+    <header>
+      <button id="openMenuButton" class="icon-button" type="button" aria-label="Open menu">☰</button>
+      <h1>Breathwork Timer</h1>
+      <button id="muteButton" class="icon-button" type="button" aria-label="Mute voice and chimes">🔊</button>
+    </header>
+    <main>
+      <section class="timer-card" aria-live="polite">
+        <div id="phase" class="phase">Ready</div>
+        <div id="countdown" class="countdown">0</div>
+        <div id="patternName" class="pattern-name">Choose a pattern or create your own.</div>
+        <div id="patternTimes" class="pattern-times">4-7-8-0</div>
+        <div class="controls"><button id="startStopButton" class="primary" type="button">Start</button></div>
+      </section>
+      <section class="settings">
+        <div class="panel">
+          <h2>Custom pattern</h2>
+          <div class="custom-grid">
+            <label>Inhale <input id="inhaleInput" type="number" min="0" max="300" step="1" value="4" inputmode="numeric" /></label>
+            <label>Hold <input id="holdAfterInhaleInput" type="number" min="0" max="300" step="1" value="7" inputmode="numeric" /></label>
+            <label>Exhale <input id="exhaleInput" type="number" min="0" max="300" step="1" value="8" inputmode="numeric" /></label>
+            <label>Hold <input id="holdAfterExhaleInput" type="number" min="0" max="300" step="1" value="0" inputmode="numeric" /></label>
+          </div>
+          <div class="controls"><button id="applyCustomButton" type="button">Use custom pattern</button></div>
+        </div>
+      </section>
+    </main>
+    <footer>Breathe gently. Stop if you feel dizzy, strained, or uncomfortable.</footer>
+  </div>
+
+  <script>
+    const presets = [
+      { name:"Box breathing", times:[4,4,4,4], description:"Balanced and steady, useful when you want calm focus." },
+      { name:"4-7-8 breathing", times:[4,7,8,0], description:"A longer exhale pattern often used for winding down." },
+      { name:"Coherent breathing", times:[5,0,5,0], description:"Simple rhythmic breathing for a smooth, regulated feeling." },
+      { name:"Relaxing 4-6", times:[4,0,6,0], description:"A gentle longer-exhale pattern for softening tension." },
+      { name:"Triangle breathing", times:[4,4,4,0], description:"Three equal sides that feel structured without a final hold." },
+      { name:"Energizing 6-2-4", times:[6,2,4,0], description:"A fuller inhale pattern for moments when you want more brightness." },
+      { name:"Buteyko-style light breath", times:[3,0,3,2], description:"Soft nasal breathing with a small pause after exhale." },
+      { name:"Gentle sleep wave", times:[4,2,8,0], description:"A quiet pattern with an elongated exhale for bedtime." },
+      { name:"Equal breathing", times:[4,0,4,0], description:"A very simple even rhythm when you want minimal structure." },
+      { name:"Long exhale", times:[3,0,6,0], description:"A compact pattern for slowing down without long holds." }
+    ];
+
+    const voices = {
+      heart:{name:"Heart",description:"Calm feminine meditation guide voice. Warm, happy, gently enthusiastic, peaceful, clear, soft, slow but not sleepy. Natural human delivery. Slight smile in the voice. Reassuring and present."},
+      velvet:{name:"Velvet",description:"Calm feminine meditation voice. Deep, warm, grounding, slow and spacious. Slightly lower pitch. Very soothing, hypnotic, reassuring. Minimal variation. Soft delivery."},
+      light:{name:"Light",description:"Calm feminine voice with light, uplifting energy. Warm, clear, slightly bright and encouraging. Peaceful but gently energizing. Natural pacing, soft and present."}
+    };
+
+    const phaseLabels = ["Inhale","Hold","Exhale","Hold"];
+    const audioClipNames = {
+      inhale:"inhale.mp3", hold:"hold.mp3", exhale:"exhale.mp3",
+      1:"one.mp3",2:"two.mp3",3:"three.mp3",4:"four.mp3",5:"five.mp3",6:"six.mp3",7:"seven.mp3",8:"eight.mp3",9:"nine.mp3",10:"ten.mp3",
+      11:"eleven.mp3",12:"twelve.mp3",13:"thirteen.mp3",14:"fourteen.mp3",15:"fifteen.mp3",16:"sixteen.mp3",17:"seventeen.mp3",18:"eighteen.mp3",19:"nineteen.mp3",20:"twenty.mp3",
+      21:"twenty-one.mp3",22:"twenty-two.mp3",23:"twenty-three.mp3",24:"twenty-four.mp3",25:"twenty-five.mp3",26:"twenty-six.mp3",27:"twenty-seven.mp3",28:"twenty-eight.mp3",29:"twenty-nine.mp3",30:"thirty.mp3"
+    };
+
+    let clips = {};
+    let activeClip = null;
+    let selectedVoice = localStorage.getItem("breathwork-selected-voice") || "heart";
+    let activePattern = { name:"4-7-8 breathing", times:[4,7,8,0] };
+    let phaseIndex = 0;
+    let remaining = activePattern.times[phaseIndex];
+    let running = false;
+    let intervalId = null;
+    let sessionSeconds = 0;
+    let completedBreaths = 0;
+    let muted = localStorage.getItem("breathwork-muted") === "true";
+    let audioContext = null;
+    let fallbackVoice = null;
+
+    const $ = id => document.getElementById(id);
+    const phaseEl=$("phase"), countdownEl=$("countdown"), patternNameEl=$("patternName"), patternTimesEl=$("patternTimes"), startStopButton=$("startStopButton"), muteButton=$("muteButton"), sessionMuteButton=$("sessionMuteButton");
+    const presetGrid=$("presetGrid"), voiceGrid=$("voiceGrid"), menu=$("menu"), menuTitle=$("menuTitle"), menuHome=$("menuHome"), patternsPage=$("patternsPage"), voicesPage=$("voicesPage"), backMenuButton=$("backMenuButton");
+    const durationDisplay=$("durationDisplay"), breathCounterDisplay=$("breathCounterDisplay");
+    const inputs=[$("inhaleInput"),$("holdAfterInhaleInput"),$("exhaleInput"),$("holdAfterExhaleInput")];
+
+    function preloadVoiceClips(){
+      clips = {};
+      const basePath = `./audio/${selectedVoice}/`;
+      Object.entries(audioClipNames).forEach(([key,filename])=>{
+        const audio = new Audio(basePath + filename);
+        audio.preload = "auto";
+        audio.volume = 0.9;
+        clips[key] = audio;
+      });
+    }
+
+    function loadFallbackVoice(){
+      if(!("speechSynthesis" in window)) return;
+      const list = speechSynthesis.getVoices();
+      fallbackVoice = list.find(v=>v.name.toLowerCase().includes("samantha")) || list.find(v=>v.name.toLowerCase().includes("google us english")) || list.find(v=>v.lang&&v.lang.startsWith("en")) || list[0] || null;
+    }
+    if("speechSynthesis" in window){speechSynthesis.onvoiceschanged=loadFallbackVoice;loadFallbackVoice();}
+
+    function validSteps(times){return times.map(Number).filter(n=>Number.isFinite(n)&&n>0)}
+    function normalizeTimes(times){return times.map(v=>{const n=Math.round(Number(v));return Number.isFinite(n)&&n>=0?Math.min(n,300):0})}
+    function firstPhase(){const i=activePattern.times.findIndex(t=>t>0);return i>=0?i:0}
+    function formatDuration(s){return `${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`}
+    function ensureAudioContext(){if(audioContext)return audioContext;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;audioContext=new AC();return audioContext}
+
+    function beep(delay=0){
+      if(muted)return; const ctx=ensureAudioContext(); if(!ctx)return;
+      const startAt=ctx.currentTime+delay, osc=ctx.createOscillator(), gain=ctx.createGain();
+      osc.type="sine"; osc.frequency.setValueAtTime(660,startAt);
+      gain.gain.setValueAtTime(.0001,startAt); gain.gain.exponentialRampToValueAtTime(.035,startAt+.015); gain.gain.exponentialRampToValueAtTime(.0001,startAt+.22);
+      osc.connect(gain); gain.connect(ctx.destination); osc.start(startAt); osc.stop(startAt+.24);
+    }
+
+    function minuteChime(){if(sessionSeconds>0&&sessionSeconds%300===0){beep(0);beep(.34)}else if(sessionSeconds>0&&sessionSeconds%60===0){beep(0)}}
+
+    function speakFallback(text){
+      if(muted||!("speechSynthesis" in window))return;
+      speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(String(text));
+      u.voice=fallbackVoice; u.rate=.68; u.pitch=selectedVoice==="velvet"?.92:selectedVoice==="light"?1.14:1.05; u.volume=.82;
+      speechSynthesis.speak(u);
+    }
+
+    function playClip(key,fallbackText){
+      if(muted)return;
+      const clip=clips[key];
+      if(!clip){speakFallback(fallbackText);return}
+      if("speechSynthesis" in window) speechSynthesis.cancel();
+      try{
+        if(activeClip){activeClip.pause();activeClip.currentTime=0}
+        activeClip=clip.cloneNode(true); activeClip.volume=.9;
+        const p=activeClip.play();
+        if(p&&typeof p.catch==="function")p.catch(()=>speakFallback(fallbackText));
+      }catch(e){speakFallback(fallbackText)}
+    }
+
+    function speakCue(text){
+      const n=String(text).toLowerCase();
+      if(n==="inhale")return playClip("inhale","Inhale");
+      if(n==="exhale")return playClip("exhale","Exhale");
+      if(n==="hold")return playClip("hold","Hold");
+      const num=Number(text);
+      if(Number.isInteger(num)&&num>=1&&num<=30)return playClip(num,String(num));
+      speakFallback(text);
+    }
+
+    function updateMuteButtons(){
+      const icon=muted?"🔇":"🔊";
+      muteButton.textContent=icon; sessionMuteButton.textContent=icon;
+    }
+
+    function moveToNextNonZeroPhase(){
+      const previous=phaseIndex;
+      for(let i=0;i<4;i++){
+        phaseIndex=(phaseIndex+1)%4;
+        if(phaseIndex===0&&previous!==0)completedBreaths++;
+        if(activePattern.times[phaseIndex]>0){remaining=activePattern.times[phaseIndex];return}
+      }
+      remaining=0;
+    }
+
+    function setPattern(pattern){
+      activePattern={name:pattern.name,times:normalizeTimes(pattern.times)};
+      if(validSteps(activePattern.times).length===0)activePattern.times=[4,0,4,0];
+      phaseIndex=firstPhase(); remaining=activePattern.times[phaseIndex]; sessionSeconds=0; completedBreaths=0; stop(false); render();
+    }
+
+    function setVoice(key){
+      selectedVoice=key; localStorage.setItem("breathwork-selected-voice",selectedVoice);
+      if(activeClip){activeClip.pause();activeClip.currentTime=0}
+      preloadVoiceClips(); buildVoices(); closeMenu(); render();
+    }
+
+    function render(){
+      phaseEl.textContent=remaining>0?phaseLabels[phaseIndex]:"Ready";
+      countdownEl.textContent=remaining;
+      patternNameEl.textContent=activePattern.name;
+      patternTimesEl.textContent=activePattern.times.join("-");
+      durationDisplay.textContent=formatDuration(sessionSeconds);
+      breathCounterDisplay.textContent=`${completedBreaths} ${completedBreaths===1?"breath":"breaths"}`;
+      startStopButton.textContent=running?"Stop":"Start"; startStopButton.classList.toggle("stop",running); updateMuteButtons();
+    }
+
+    function tick(){
+      if(!running)return;
+      sessionSeconds++; minuteChime(); remaining--;
+      if(remaining<=0){moveToNextNonZeroPhase(); speakCue(phaseLabels[phaseIndex])} else {setTimeout(()=>speakCue(remaining),120)}
+      render();
+    }
+
+    function start(){
+      if(validSteps(activePattern.times).length===0)return;
+      running=true; document.body.classList.add("session-active");
+      ensureAudioContext(); if(audioContext&&audioContext.state==="suspended")audioContext.resume();
+      speakCue(phaseLabels[phaseIndex]); render();
+      clearInterval(intervalId); intervalId=setInterval(tick,1000);
+    }
+
+    function stop(resetSession=true){
+      running=false; clearInterval(intervalId); intervalId=null; document.body.classList.remove("session-active");
+      if(activeClip){activeClip.pause();activeClip.currentTime=0}
+      if("speechSynthesis" in window)speechSynthesis.cancel();
+      if(resetSession){phaseIndex=firstPhase(); remaining=activePattern.times[phaseIndex]; sessionSeconds=0; completedBreaths=0}
+      render();
+    }
+
+    function toggleMute(){
+      muted=!muted; localStorage.setItem("breathwork-muted",String(muted));
+      if(muted){if(activeClip){activeClip.pause();activeClip.currentTime=0} if("speechSynthesis" in window)speechSynthesis.cancel()}
+      render();
+    }
+
+    function setMenuPage(page){
+      menuHome.classList.toggle("active",page==="home");
+      patternsPage.classList.toggle("active",page==="patterns");
+      voicesPage.classList.toggle("active",page==="voices");
+      backMenuButton.style.visibility=page==="home"?"hidden":"visible";
+      menuTitle.textContent=page==="patterns"?"Breathing pattern":page==="voices"?"Choose voice":"Menu";
+    }
+    function openMenu(){menu.classList.add("open");menu.setAttribute("aria-hidden","false");setMenuPage("home")}
+    function closeMenu(){menu.classList.remove("open");menu.setAttribute("aria-hidden","true");setMenuPage("home")}
+
+    function buildPresets(){
+      presetGrid.innerHTML="";
+      presets.forEach(p=>{
+        const b=document.createElement("button"); b.className="preset"; b.type="button";
+        b.innerHTML=`<strong>${p.name}</strong><span>${p.description}</span><small>${p.times.join("-")} sec</small>`;
+        b.addEventListener("click",()=>{inputs.forEach((input,i)=>input.value=p.times[i]);setPattern(p);closeMenu()});
+        presetGrid.appendChild(b);
+      });
+    }
+
+    function buildVoices(){
+      voiceGrid.innerHTML="";
+      Object.entries(voices).forEach(([key,v])=>{
+        const b=document.createElement("button"); b.className="voice-card"; b.type="button";
+        b.innerHTML=`<strong>${v.name}</strong><span>${v.description}</span>${selectedVoice===key?'<div class="selected-pill">Selected</div>':""}`;
+        b.addEventListener("click",()=>setVoice(key));
+        voiceGrid.appendChild(b);
+      });
+    }
+
+    startStopButton.addEventListener("click",()=>running?stop(true):start());
+    muteButton.addEventListener("click",toggleMute); sessionMuteButton.addEventListener("click",toggleMute);
+    $("openMenuButton").addEventListener("click",openMenu); $("closeMenuButton").addEventListener("click",closeMenu);
+    $("breathingPatternsButton").addEventListener("click",()=>setMenuPage("patterns")); $("chooseVoiceButton").addEventListener("click",()=>setMenuPage("voices"));
+    backMenuButton.addEventListener("click",()=>setMenuPage("home"));
+    document.addEventListener("keydown",e=>{if(e.key==="Escape")closeMenu()});
+    $("applyCustomButton").addEventListener("click",()=>setPattern({name:"Custom pattern",times:normalizeTimes(inputs.map(i=>i.value))}));
+
+    if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"))}
+
+    preloadVoiceClips(); buildPresets(); buildVoices(); setMenuPage("home"); setPattern(activePattern);
+  </script>
+</body>
+</html>
