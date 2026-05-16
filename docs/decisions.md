@@ -1,1 +1,2 @@
-Use MP3 + PWA + cache audio only
+# Decision
+- User velvet voice by default

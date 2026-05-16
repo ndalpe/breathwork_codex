@@ -1,0 +1,37 @@
+# App design ( UI/UX )
+
+## User Interface
+
+### General guidelines
+- The user interface must respect the WCAG accessibility standard
+- UI should be as minimal as possible, exposing the features needed according to the users context
+- Play with text size to emphasize information
+
+### Header
+- The top of the screen is called the header.
+- On the left of the header is for the location of the burger menu.
+- The right of the header contains the mute button to toggle the voice on or off
+- The right of the header also contains the haptic button to toggle vibration on or off
+
+### Breathing Coach
+- Below the header is the breathing coach (or BC for short)
+- When no breathwork is running, the BC only contains the currently selected breathing pattern name, followed by the breath count below it. For example Box breathing 4-4-4-4. The BC also contains a button to start the breathwork.
+
+### Breathing pattern library button
+- When no breathwork is running, display a button below the BC so the user can access the breathing pattern library.
+- This button should be labeled "Breathing pattern library"
+
+### Custom breathing pattern
+- When no breathwork is running, display a button labeled "Custom breathing pattern". Tapping on this button would expand the CBP widget.
+
+### The burger menu
+- The burger menu contain a link to the breathing pattern library. The button should be called "Breathing patterns" and contains a short sentence "Choose a predefined breathing pattern according to how you feel in the moment."
+- The burger menu should also contain a link to the voice library. The button is called "Choose your guidance" and below it, a short sentence "Select the voice for the spoken guidance."
+- When tapped, the burger menu should take all the screen space
+- The title of the burger menu is "Menu"
+- At the top right of the menu there is a X button allowing the user to close the burger menu
+
+## User Experience
+- When a breathwork session is starts, the BC should take all the screen real-estate while keeping the header visible.
+- The breathing pattern library is hidden when a breathwork session starts
+- The Custom breathing pattern is hidden when a breathwork session starts

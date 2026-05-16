@@ -15,7 +15,10 @@
 - Background ambient sound
 - Add custom ambient sound from Youtube
 - Background ambient visual design (theme)
-- Haptic feedback
+- Use haptic feedback instead of voice
+- Short vibration for time count
+- Long vibration for breathing pattern changes (inhale, exhale, etc)
+- Choose voice according to breathing pattern
 
 ## Phase 3 – Intelligence
 - Adaptive breathing patterns
