@@ -19,6 +19,7 @@
 - Short vibration for time count
 - Long vibration for breathing pattern changes (inhale, exhale, etc)
 - Choose voice according to breathing pattern
+- Bring intention to breathwork, Ganesha, Kali, Shiva
 
 ## Phase 3 – Intelligence
 - Adaptive breathing patterns
