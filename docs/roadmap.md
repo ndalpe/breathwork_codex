@@ -9,6 +9,8 @@
 - Display breathwork timer (total time of the breathwork)
 - Display number of completed breaths cycle
 - Mute button
+- Add multi-language support for the in the interface
+- Add multi-language support for the voices
 
 ## Phase 2 – Immersion
 - Crossfade audio
