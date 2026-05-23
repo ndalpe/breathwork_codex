@@ -16,6 +16,7 @@
 ### Breathing Coach
 - Below the header is the breathing coach (or BC for short)
 - When no breathwork is running, the BC only contains the currently selected breathing pattern name, followed by the breath count below it. For example Box breathing 4-4-4-4. The BC also contains a button to start the breathwork.
+- When a breathwork is running the breathing coach takes all the screen space and contains the breathwork information to guide the user.
 
 ### Breathing pattern library button
 - When no breathwork is running, display a button below the BC so the user can access the breathing pattern library.
@@ -25,11 +26,11 @@
 - When no breathwork is running, display a button labeled "Custom breathing pattern". Tapping on this button would expand the CBP widget.
 
 ### The burger menu
-- The burger menu contain a link to the breathing pattern library. The button should be called "Breathing patterns" and contains a short sentence "Choose a predefined breathing pattern according to how you feel in the moment."
-- The burger menu should also contain a link to the voice library. The button is called "Choose your guidance" and below it, a short sentence "Select the voice for the spoken guidance."
+- The burger menu contain a link to the breathing pattern library.
+- The burger menu should also contain a link to the voice library.
 - When tapped, the burger menu should take all the screen space
 - The title of the burger menu is "Menu"
-- At the top right of the menu there is a X button allowing the user to close the burger menu
+- At the top right of the menu there is a X button, visible at all time, allowing the user to close the burger menu
 
 ## User Experience
 - When a breathwork session is starts, the BC should take all the screen real-estate while keeping the header visible.
