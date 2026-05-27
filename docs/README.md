@@ -6,6 +6,11 @@ Purpose
 - Centralize product decisions, UX specs, and implementation notes for designers and developers.
 - Make the current project state discoverable: implemented features, in-progress work, and planned work.
 
+Mental model
+- /docs = knowledge
+- /prompts = execution
+- /tasks = planning
+
 How to read these docs
 - Start with `context.md` for high-level goals and constraints.
 - Read `vision.md` to understand design principles and product intent.
