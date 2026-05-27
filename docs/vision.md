@@ -8,6 +8,7 @@ Principles:
 - Audio feels human, warm, and embodied
 - Each breathing technic is it's own univers of breath, sound and visual design.
 - App should be as flexible as possible to adapt to each user's breathing goals.
+- Do not show technical implementation details to the end user.
 
 Goal:
 - Create a tool that feels like a presence, not an interface.
