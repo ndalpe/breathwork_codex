@@ -105,4 +105,4 @@ unless explicitly required by the user.
 - [ ] Stop button is fully visible on mobile.
 - [ ] Audio files are requested from the selected voice folder.
 - [ ] Service worker does not cache app/code files.
-- [ ] Audio files are cached after request.
+- [ ] Audio files are preloaded after request.
