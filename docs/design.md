@@ -26,11 +26,15 @@
 - When no breathwork is running, display a button labeled "Custom breathing pattern". Tapping on this button would expand the CBP widget.
 
 ### The burger menu
-- The burger menu contain a link to the breathing pattern library.
-- The burger menu should also contain a link to the voice library.
 - When tapped, the burger menu should take all the screen space
-- The title of the burger menu is "Menu"
+- The BM should have a background color
+- The title of the burger menu is "Menu" and is aligned center.
+- The title of the BM should be displayed with a contrasting color and be easy to read
+- The BM contains a link to the breathing pattern library.
+- The BM should also contain a link to the voice library.
 - At the top right of the menu there is a X button, visible at all time, allowing the user to close the burger menu
+- The buttons in the BM have a title in bold caracter followed by a line break and a description
+- The visual design of all buttons in the BM should be identical to keep a visual consistency
 
 ## User Experience
 - When a breathwork session is starts, the BC should take all the screen real-estate while keeping the header visible.
