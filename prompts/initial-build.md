@@ -20,6 +20,10 @@ Rebuild the first clean version of the app from scratch using the current docume
 docs/
 ```
 
+Use the documentation as the source of truth.
+
+If documentation conflicts with existing code, prefer the documentation and mention the conflict.
+
 The rebuild should replace the app code, but preserve the existing audio files in:
 
 ```text
@@ -35,23 +39,6 @@ app/audio/
 ```
 
 The audio files are already generated and should be reused by the rebuilt app.
-
-## Documentation to inspect first
-
-Read all relevant documentation in:
-
-```text
-docs/vision.md
-docs/roadmap.md
-docs/decisions.md
-docs/features/
-tasks/current.md
-tasks/backlog.md
-```
-
-Use the documentation as the source of truth.
-
-If documentation conflicts with existing code, prefer the documentation and mention the conflict.
 
 
 ### Audio system
