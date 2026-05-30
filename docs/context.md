@@ -3,6 +3,7 @@
 - PWA breathwork app
 - Offline-first
 - Built with React JS
+- React JS should use development build for easier debugging
 - Built with Tailwind CSS & Chakra UI
 - App is deployed to GitHub Pages from the `app/` folder using GitHub Actions.
 - Only final production-ready files should be copied into app/.
