@@ -263,8 +263,21 @@
               )
             ),
 
-            React.createElement(Box, { className: running ? "rounded-none" : "rounded-3xl", bg: "pine.700", boxShadow: "breath", p: 5, minH: running ? "calc(100vh - 90px)" : "42vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", position: "relative" },
-              running && React.createElement(Flex, { w: "full", justify: "space-between", color: "pine.300", mb: "auto", fontVariantNumeric: "tabular-nums" },
+            React.createElement(Box, {
+              className: running ? "rounded-none" : "rounded-3xl",
+              bg: "pine.700",
+              boxShadow: "breath",
+              p: running ? 3 : 5,
+              minH: running ? "calc(100vh - 90px)" : "42vh",
+              display: running ? "grid" : "flex",
+              gridTemplateRows: running ? "auto 1fr auto" : undefined,
+              flexDirection: running ? undefined : "column",
+              alignItems: "center",
+              justifyContent: running ? undefined : "center",
+              textAlign: "center",
+              position: "relative"
+            },
+              running && React.createElement(Flex, { w: "full", justify: "space-between", color: "pine.300", fontVariantNumeric: "tabular-nums", minH: "52px" },
                 React.createElement(Box, null,
                   React.createElement(Text, null, formatDuration(sessionSeconds)),
                   React.createElement(Text, null, `${completedBreaths} ${completedBreaths === 1 ? "breath" : "breaths"}`)
@@ -278,14 +291,14 @@
                 React.createElement(Button, { colorScheme: "teal", onClick: startSession, w: "full" }, "Start")
               ),
 
-              running && React.createElement(VStack, { spacing: 2 },
+              running && React.createElement(VStack, { spacing: 2, alignSelf: "center", justifySelf: "center", w: "full" },
                 React.createElement(Text, { color: "pine.300", textTransform: "uppercase", letterSpacing: "0.08em", fontSize: ["xl", "2xl"] }, PHASES[phaseIndex]),
                 React.createElement(Text, { fontSize: ["8rem", "10rem"], lineHeight: "0.9", fontWeight: "800", fontVariantNumeric: "tabular-nums" }, remaining),
                 React.createElement(Text, { color: "pine.300" }, patternText)
               ),
 
-              running && React.createElement(Box, { position: "fixed", left: 3, right: 3, bottom: 3 },
-                React.createElement(Button, { colorScheme: "red", w: "full", onClick: stopSession }, "Stop")
+              running && React.createElement(Box, { w: "full", minH: "96px", display: "flex", alignItems: "end", pb: "calc(env(safe-area-inset-bottom, 0px) + 8px)" },
+                React.createElement(Button, { colorScheme: "red", w: "full", onClick: stopSession, h: "56px" }, "Stop")
               )
             ),
 
