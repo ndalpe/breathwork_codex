@@ -252,9 +252,9 @@
       };
 
       return (
-        React.createElement(Box, { className: "min-h-screen bg-pine-900 text-white" },
-          React.createElement(Box, { className: "mx-auto max-w-5xl p-3 md:p-4" },
-            React.createElement(Flex, { align: "center", justify: "space-between", gap: 2, className: "sticky top-0 z-10 py-1" },
+        React.createElement(Box, { className: running ? "h-[100dvh] overflow-hidden bg-pine-900 text-white" : "min-h-screen bg-pine-900 text-white" },
+          React.createElement(Box, { className: running ? "mx-auto max-w-5xl h-full p-3 md:p-4 flex flex-col" : "mx-auto max-w-5xl p-3 md:p-4" },
+            React.createElement(Flex, { align: "center", justify: "space-between", gap: 2, className: running ? "z-10 py-1" : "sticky top-0 z-10 py-1" },
               React.createElement(Button, { "aria-label": "Open menu", onClick: menu.onOpen, minW: "44px", h: "44px", p: 0 }, "☰"),
               React.createElement(Text, { fontWeight: "700", fontSize: "lg", letterSpacing: "0.02em" }, "Breathwork"),
               React.createElement(HStack, { spacing: 2 },
@@ -268,7 +268,8 @@
               bg: "pine.700",
               boxShadow: "breath",
               p: running ? 3 : 5,
-              minH: running ? "calc(100vh - 90px)" : "42vh",
+              minH: running ? undefined : "42vh",
+              h: running ? "100%" : undefined,
               display: running ? "grid" : "flex",
               gridTemplateRows: running ? "auto 1fr auto" : undefined,
               flexDirection: running ? undefined : "column",
