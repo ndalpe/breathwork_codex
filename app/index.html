@@ -3,18 +3,21 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#1f2a2a" />
+  <meta name="theme-color" content="#162222" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <link rel="manifest" href="manifest.json" />
   <title>Breathwork</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="importmap">
     {
       "imports": {
-        "react": "https://esm.sh/react@18.3.1",
-        "react-dom": "https://esm.sh/react-dom@18.3.1",
-        "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
-        "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
-        "react/jsx-dev-runtime": "https://esm.sh/react@18.3.1/jsx-dev-runtime"
+        "react": "https://esm.sh/react@18.3.1?dev",
+        "react-dom": "https://esm.sh/react-dom@18.3.1?dev",
+        "react-dom/client": "https://esm.sh/react-dom@18.3.1/client?dev",
+        "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime?dev",
+        "react/jsx-dev-runtime": "https://esm.sh/react@18.3.1/jsx-dev-runtime?dev"
       }
     }
   </script>
@@ -24,156 +27,397 @@
         extend: {
           colors: {
             pine: {
+              950: "#101a1a",
               900: "#162222",
               800: "#1f2f2f",
               700: "#2a3c3b",
               600: "#35504d",
               500: "#4b6f69",
-              300: "#8fc5b6"
-            }
+              300: "#9fd1c4",
+              100: "#e8f4f1"
+            },
+            ember: "#e68a73"
           },
           boxShadow: {
-            breath: "0 18px 45px rgba(0,0,0,.35)"
+            breath: "0 24px 70px rgba(0,0,0,.38)"
           }
         }
       }
     };
   </script>
   <style>
-    html, body { margin: 0; min-height: 100%; background: #162222; }
-    #root { min-height: 100vh; }
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: #162222;
+      color: #e8f4f1;
+      overscroll-behavior: none;
+    }
+
+    body {
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    #root {
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .screen-safe {
+      padding-left: max(1rem, env(safe-area-inset-left));
+      padding-right: max(1rem, env(safe-area-inset-right));
+    }
+
+    .bottom-safe {
+      padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+    }
+
+    .focus-ring:focus-visible {
+      outline: 3px solid #9fd1c4;
+      outline-offset: 3px;
+    }
   </style>
 </head>
 <body>
   <div id="root"></div>
 
   <script type="module">
-    import React, { useEffect, useMemo, useRef, useState } from "react";
+    import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
     import { createRoot } from "react-dom/client";
     import {
       ChakraProvider,
       Box,
-      Flex,
-      Text,
       Button,
-      VStack,
-      HStack,
+      Flex,
       Grid,
       GridItem,
-      Drawer,
-      DrawerOverlay,
-      DrawerContent,
-      DrawerHeader,
-      DrawerBody,
-      useDisclosure,
-      theme as chakraTheme
+      HStack,
+      Text,
+      VStack,
+      extendTheme
     } from "https://esm.sh/@chakra-ui/react@2.10.9?external=react,react-dom&deps=react@18.3.1,react-dom@18.3.1";
 
+    const STORAGE_KEYS = {
+      voice: "breathwork.voice",
+      muted: "breathwork.muted",
+      haptics: "breathwork.haptics"
+    };
+
+    const PHASES = [
+      { key: "inhale", label: "Inhale", required: true },
+      { key: "hold", label: "Hold", required: false },
+      { key: "exhale", label: "Exhale", required: true },
+      { key: "hold", label: "Hold", required: false }
+    ];
+
+    const NUMBER_CLIPS = [
+      "zero",
+      "one",
+      "two",
+      "three",
+      "four",
+      "five",
+      "six",
+      "seven",
+      "eight",
+      "nine",
+      "ten",
+      "eleven",
+      "twelve",
+      "thirteen",
+      "fourteen",
+      "fifteen",
+      "sixteen",
+      "seventeen",
+      "eighteen",
+      "nineteen",
+      "twenty",
+      "twenty-one",
+      "twenty-two",
+      "twenty-three",
+      "twenty-four",
+      "twenty-five",
+      "twenty-six",
+      "twenty-seven",
+      "twenty-eight",
+      "twenty-nine",
+      "thirty"
+    ];
+
+    const CLIPS = {
+      inhale: "inhale.mp3",
+      hold: "hold.mp3",
+      exhale: "exhale.mp3",
+      ...Object.fromEntries(NUMBER_CLIPS.slice(1).map((name, index) => [String(index + 1), `${name}.mp3`]))
+    };
+
     const PRESETS = [
-      { name: "Box Breathing", description: "Balanced and steady focus.", times: [4, 4, 4, 4] },
-      { name: "4-7-8", description: "Longer exhale for relaxation.", times: [4, 7, 8, 0] },
-      { name: "Coherent 5-5", description: "Smooth regulation rhythm.", times: [5, 0, 5, 0] },
-      { name: "Relaxing 4-6", description: "Gentle tension release.", times: [4, 0, 6, 0] },
-      { name: "Triangle", description: "Structured, no end hold.", times: [4, 4, 4, 0] }
+      {
+        name: "Box breathing",
+        description: "Build steady focus with equal inhale, hold, exhale, and hold.",
+        times: [4, 4, 4, 4]
+      },
+      {
+        name: "4-7-8",
+        description: "Downshift toward rest with a long hold and longer exhale.",
+        times: [4, 7, 8, 0]
+      },
+      {
+        name: "Coherent breathing",
+        description: "Support calm regulation with a smooth five-second rhythm.",
+        times: [5, 0, 5, 0]
+      },
+      {
+        name: "Relaxing breath",
+        description: "Release tension with a soft inhale and extended exhale.",
+        times: [4, 0, 6, 0]
+      },
+      {
+        name: "Triangle breathing",
+        description: "Create a clear three-part rhythm without a final hold.",
+        times: [4, 4, 4, 0]
+      },
+      {
+        name: "Energizing breath",
+        description: "Use a shorter, active rhythm for alertness and momentum.",
+        times: [3, 0, 3, 0]
+      }
     ];
 
     const VOICES = {
       velvet: {
-        label: "Velvet Guide",
+        name: "Velvet Guide",
+        tone: "deep calm, grounding",
         feel: "like being wrapped in a soft blanket at dusk",
         best: "sleep, anxiety relief, long exhale work, theta states"
       },
       heart: {
-        label: "Heart Companion",
+        name: "Heart Companion",
+        tone: "warm, human, gently uplifting",
         feel: "someone kind sitting next to you, breathing with you",
         best: "daily practice, emotional regulation, consistency"
       },
       light: {
-        label: "Light Energizer",
+        name: "Light Energizer",
+        tone: "bright, alive, subtle joy",
         feel: "morning sunlight through a window",
         best: "energizing breathwork, Wim Hof style, activation"
       }
     };
 
-    const CLIPS = {
-      inhale: "inhale.mp3", hold: "hold.mp3", exhale: "exhale.mp3",
-      1: "one.mp3",2: "two.mp3",3: "three.mp3",4: "four.mp3",5: "five.mp3",6: "six.mp3",7: "seven.mp3",8: "eight.mp3",9: "nine.mp3",10: "ten.mp3",
-      11: "eleven.mp3",12: "twelve.mp3",13: "thirteen.mp3",14: "fourteen.mp3",15: "fifteen.mp3",16: "sixteen.mp3",17: "seventeen.mp3",18: "eighteen.mp3",19: "nineteen.mp3",20: "twenty.mp3",
-      21: "twenty-one.mp3",22: "twenty-two.mp3",23: "twenty-three.mp3",24: "twenty-four.mp3",25: "twenty-five.mp3",26: "twenty-six.mp3",27: "twenty-seven.mp3",28: "twenty-eight.mp3",29: "twenty-nine.mp3",30: "thirty.mp3"
+    const chakraTheme = extendTheme({
+      styles: {
+        global: {
+          body: {
+            bg: "transparent",
+            color: "pine.100"
+          }
+        }
+      },
+      colors: {
+        pine: {
+          950: "#101a1a",
+          900: "#162222",
+          800: "#1f2f2f",
+          700: "#2a3c3b",
+          600: "#35504d",
+          500: "#4b6f69",
+          300: "#9fd1c4",
+          100: "#e8f4f1"
+        }
+      },
+      components: {
+        Button: {
+          baseStyle: {
+            borderRadius: "999px",
+            fontWeight: 700,
+            minH: "44px"
+          }
+        }
+      }
+    });
+
+    const clampTiming = value => {
+      const number = Number.parseInt(String(value), 10);
+      if (!Number.isFinite(number)) return 0;
+      return Math.max(0, Math.min(30, number));
     };
 
-    const PHASES = ["Inhale", "Hold", "Exhale", "Hold"];
+    const patternText = times => times.join("-");
 
-    const normalize = value => {
-      const n = Number(value);
-      if (!Number.isFinite(n)) return 0;
-      return Math.max(0, Math.min(300, Math.round(n)));
+    const firstPlayablePhase = times => {
+      const index = times.findIndex(seconds => seconds > 0);
+      return index >= 0 ? index : 0;
     };
 
-    const firstPhaseIndex = times => {
-      const idx = times.findIndex(t => t > 0);
-      return idx >= 0 ? idx : 0;
+    const nextPlayablePhase = (times, currentPhase) => {
+      for (let offset = 1; offset <= PHASES.length; offset += 1) {
+        const nextPhase = (currentPhase + offset) % PHASES.length;
+        if (times[nextPhase] > 0) {
+          return {
+            phaseIndex: nextPhase,
+            completedCycle: nextPhase <= currentPhase
+          };
+        }
+      }
+
+      return {
+        phaseIndex: firstPlayablePhase(times),
+        completedCycle: true
+      };
     };
 
-    const formatDuration = total => `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+    const formatDuration = seconds => {
+      const minutes = Math.floor(seconds / 60);
+      const remainder = seconds % 60;
+      return `${String(minutes).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`;
+    };
 
     function App() {
-      const [selectedVoice, setSelectedVoice] = useState(localStorage.getItem("breathwork_voice") || "velvet");
-      const [muted, setMuted] = useState(localStorage.getItem("breathwork_muted") === "true");
-      const [haptic, setHaptic] = useState(localStorage.getItem("breathwork_haptic") !== "false");
       const [pattern, setPattern] = useState(PRESETS[0]);
+      const [selectedVoice, setSelectedVoice] = useState(() => localStorage.getItem(STORAGE_KEYS.voice) || "velvet");
+      const [muted, setMuted] = useState(() => localStorage.getItem(STORAGE_KEYS.muted) === "true");
+      const [hapticsEnabled, setHapticsEnabled] = useState(() => localStorage.getItem(STORAGE_KEYS.haptics) !== "false");
+      const [activePanel, setActivePanel] = useState(null);
       const [customOpen, setCustomOpen] = useState(false);
       const [customTimes, setCustomTimes] = useState([4, 4, 4, 0]);
       const [customErrors, setCustomErrors] = useState({ inhale: false, exhale: false });
-
       const [running, setRunning] = useState(false);
-      const [phaseIndex, setPhaseIndex] = useState(firstPhaseIndex(PRESETS[0].times));
-      const [remaining, setRemaining] = useState(PRESETS[0].times[firstPhaseIndex(PRESETS[0].times)]);
-      const [sessionSeconds, setSessionSeconds] = useState(0);
+      const [phaseIndex, setPhaseIndex] = useState(firstPlayablePhase(PRESETS[0].times));
+      const [remaining, setRemaining] = useState(PRESETS[0].times[firstPlayablePhase(PRESETS[0].times)]);
+      const [duration, setDuration] = useState(0);
       const [completedBreaths, setCompletedBreaths] = useState(0);
-
       const audioRef = useRef({});
-      const intervalRef = useRef(null);
+      const tickRef = useRef(null);
+      const preloadTokenRef = useRef("");
 
-      const menu = useDisclosure();
-      const patterns = useDisclosure();
-      const voices = useDisclosure();
+      const selectedPatternText = useMemo(() => patternText(pattern.times), [pattern]);
+
+      const closePanels = useCallback(() => setActivePanel(null), []);
+
+      const vibrate = useCallback(durationMs => {
+        if (!hapticsEnabled || !navigator.vibrate) return;
+        navigator.vibrate(durationMs);
+      }, [hapticsEnabled]);
+
+      const playCue = useCallback((cue, token = preloadTokenRef.current) => {
+        if (muted) return;
+        const key = String(cue).toLowerCase();
+        const file = CLIPS[key];
+        if (!file) return;
+
+        try {
+          const audio = audioRef.current[key] || new Audio(`./audio/${selectedVoice}/${file}?v=${token}`);
+          audio.currentTime = 0;
+          audio.play().catch(() => {});
+        } catch (_) {
+          // Audio playback can be blocked until a user gesture; the timer should continue.
+        }
+      }, [muted, selectedVoice]);
+
+      const resetSession = useCallback((nextPattern = pattern) => {
+        const startPhase = firstPlayablePhase(nextPattern.times);
+        setRunning(false);
+        setPhaseIndex(startPhase);
+        setRemaining(nextPattern.times[startPhase]);
+        setDuration(0);
+        setCompletedBreaths(0);
+      }, [pattern]);
+
+      const applyPattern = useCallback(nextPattern => {
+        setPattern(nextPattern);
+        setCustomTimes(nextPattern.times);
+        setCustomErrors({ inhale: false, exhale: false });
+        resetSession(nextPattern);
+        closePanels();
+      }, [closePanels, resetSession]);
+
+      const startSession = () => {
+        const startPhase = firstPlayablePhase(pattern.times);
+        setActivePanel(null);
+        setCustomOpen(false);
+        setDuration(0);
+        setCompletedBreaths(0);
+        setPhaseIndex(startPhase);
+        setRemaining(pattern.times[startPhase]);
+        setRunning(true);
+        playCue(PHASES[startPhase].key);
+        vibrate(160);
+      };
+
+      const stopSession = () => {
+        resetSession();
+      };
+
+      const updateCustomTime = (index, value) => {
+        setCustomTimes(current => current.map((seconds, currentIndex) => currentIndex === index ? clampTiming(value) : seconds));
+        if (index === 0) setCustomErrors(current => ({ ...current, inhale: false }));
+        if (index === 2) setCustomErrors(current => ({ ...current, exhale: false }));
+      };
+
+      const applyCustomPattern = () => {
+        const nextTimes = customTimes.map(clampTiming);
+        const nextErrors = {
+          inhale: nextTimes[0] < 1,
+          exhale: nextTimes[2] < 1
+        };
+        setCustomErrors(nextErrors);
+
+        if (nextErrors.inhale || nextErrors.exhale) return;
+
+        applyPattern({
+          name: "Custom breathing pattern",
+          description: "Your custom rhythm.",
+          times: nextTimes
+        });
+      };
 
       useEffect(() => {
+        localStorage.setItem(STORAGE_KEYS.voice, selectedVoice);
+        const token = String(Date.now());
+        preloadTokenRef.current = token;
         const loaded = {};
-        const base = `./audio/${selectedVoice}/`;
-        Object.entries(CLIPS).forEach(([k, file]) => {
-          const audio = new Audio(base + file);
+
+        Object.entries(CLIPS).forEach(([key, file]) => {
+          const audio = new Audio(`./audio/${selectedVoice}/${file}?v=${token}`);
           audio.preload = "auto";
-          loaded[k] = audio;
+          audio.load();
+          loaded[key] = audio;
         });
+
         audioRef.current = loaded;
-        localStorage.setItem("breathwork_voice", selectedVoice);
       }, [selectedVoice]);
 
       useEffect(() => {
-        localStorage.setItem("breathwork_muted", String(muted));
+        localStorage.setItem(STORAGE_KEYS.muted, String(muted));
       }, [muted]);
 
       useEffect(() => {
-        localStorage.setItem("breathwork_haptic", String(haptic));
-      }, [haptic]);
+        localStorage.setItem(STORAGE_KEYS.haptics, String(hapticsEnabled));
+      }, [hapticsEnabled]);
 
       useEffect(() => {
         if (!running) {
-          if (intervalRef.current) clearInterval(intervalRef.current);
-          intervalRef.current = null;
-          return;
+          window.clearInterval(tickRef.current);
+          tickRef.current = null;
+          return undefined;
         }
 
-        intervalRef.current = setInterval(() => {
-          setSessionSeconds(s => s + 1);
-          setRemaining(r => r - 1);
+        tickRef.current = window.setInterval(() => {
+          setDuration(seconds => seconds + 1);
+          setRemaining(seconds => seconds - 1);
         }, 1000);
 
         return () => {
-          if (intervalRef.current) clearInterval(intervalRef.current);
-          intervalRef.current = null;
+          window.clearInterval(tickRef.current);
+          tickRef.current = null;
         };
       }, [running]);
 
@@ -181,266 +425,387 @@
         if (!running) return;
 
         if (remaining > 0) {
-          if (!muted) playCue(remaining);
-          if (haptic && navigator.vibrate) navigator.vibrate(40);
+          if (remaining !== pattern.times[phaseIndex]) {
+            playCue(remaining);
+            vibrate(45);
+          }
           return;
         }
 
-        let next = phaseIndex;
-        let wraps = 0;
-        while (wraps < 4) {
-          const candidate = (next + 1) % 4;
-          if (candidate === 0 && next !== 0) setCompletedBreaths(b => b + 1);
-          next = candidate;
-          if (pattern.times[next] > 0) break;
-          wraps += 1;
+        const next = nextPlayablePhase(pattern.times, phaseIndex);
+        setPhaseIndex(next.phaseIndex);
+        setRemaining(pattern.times[next.phaseIndex]);
+        if (next.completedCycle) {
+          setCompletedBreaths(count => count + 1);
         }
+        playCue(PHASES[next.phaseIndex].key);
+        vibrate(180);
+      }, [phaseIndex, pattern.times, playCue, remaining, running, vibrate]);
 
-        setPhaseIndex(next);
-        setRemaining(pattern.times[next]);
-        if (!muted) playCue(PHASES[next].toLowerCase());
-        if (haptic && navigator.vibrate) navigator.vibrate(140);
-      }, [remaining, running]);
+      return React.createElement(Box, {
+        className: running ? "h-[100dvh] overflow-hidden bg-pine-900 text-pine-100" : "min-h-[100dvh] bg-pine-900 text-pine-100"
+      },
+        React.createElement(Box, {
+          className: running ? "mx-auto flex h-full max-w-4xl flex-col screen-safe py-3" : "mx-auto flex min-h-[100dvh] max-w-4xl flex-col screen-safe py-3"
+        },
+          React.createElement(Header, {
+            hapticsEnabled,
+            muted,
+            onMenu: () => setActivePanel("menu"),
+            onToggleHaptics: () => setHapticsEnabled(current => !current),
+            onToggleMute: () => setMuted(current => !current),
+            running
+          }),
 
-      const patternText = useMemo(() => pattern.times.join("-"), [pattern]);
+          React.createElement(BreathingCoach, {
+            completedBreaths,
+            duration,
+            onStart: startSession,
+            onStop: stopSession,
+            pattern,
+            patternText: selectedPatternText,
+            phaseLabel: PHASES[phaseIndex].label,
+            remaining,
+            running
+          }),
 
-      const playCue = cue => {
-        if (muted) return;
-        const key = String(cue).toLowerCase();
-        const mapped = (key === "inhale" || key === "exhale" || key === "hold") ? key : String(Number(cue));
-        const template = audioRef.current[mapped];
-        if (!template) return;
-        try {
-          const clip = template.cloneNode(true);
-          clip.play().catch(() => {});
-        } catch (_) {}
-      };
+          !running && React.createElement(VStack, { align: "stretch", spacing: 3, mt: 4, pb: 6 },
+            React.createElement(Button, {
+              className: "focus-ring",
+              colorScheme: "teal",
+              h: "52px",
+              onClick: () => setActivePanel("patterns")
+            }, "Breathing pattern library"),
+            React.createElement(CustomPattern, {
+              customErrors,
+              customOpen,
+              customTimes,
+              onApply: applyCustomPattern,
+              onToggle: () => setCustomOpen(current => !current),
+              onUpdate: updateCustomTime
+            })
+          )
+        ),
 
-      const resetSession = nextPattern => {
-        const target = nextPattern || pattern;
-        const startIdx = firstPhaseIndex(target.times);
-        setRunning(false);
-        setPhaseIndex(startIdx);
-        setRemaining(target.times[startIdx]);
-        setSessionSeconds(0);
-        setCompletedBreaths(0);
-      };
+        React.createElement(FullscreenPanel, {
+          isOpen: activePanel === "menu",
+          onClose: closePanels,
+          title: "Menu"
+        },
+          React.createElement(VStack, { align: "stretch", spacing: 4 },
+            React.createElement(MenuCard, {
+              description: "Choose a predefined breathing pattern according to how you want to feel.",
+              onClick: () => setActivePanel("patterns"),
+              title: "Breathing patterns"
+            }),
+            React.createElement(MenuCard, {
+              description: "Select a voice for the spoken guidance.",
+              onClick: () => setActivePanel("voices"),
+              title: "Choose a voice"
+            })
+          )
+        ),
 
-      const applyPattern = next => {
-        setPattern(next);
-        setCustomTimes(next.times);
-        resetSession(next);
-      };
+        React.createElement(FullscreenPanel, {
+          isOpen: activePanel === "patterns",
+          onClose: closePanels,
+          title: "Breathing patterns"
+        },
+          React.createElement(VStack, { align: "stretch", spacing: 3 },
+            PRESETS.map(preset => React.createElement(ChoiceCard, {
+              key: preset.name,
+              description: preset.description,
+              meta: patternText(preset.times),
+              onClick: () => applyPattern(preset),
+              selected: preset.name === pattern.name && patternText(preset.times) === selectedPatternText,
+              title: preset.name
+            }))
+          )
+        ),
 
-      const applyCustomPattern = () => {
-        const next = customTimes.map(normalize);
-        const inhaleValid = next[0] >= 1;
-        const exhaleValid = next[2] >= 1;
-        setCustomErrors({ inhale: !inhaleValid, exhale: !exhaleValid });
-        if (!inhaleValid || !exhaleValid) return;
-        applyPattern({ name: "Custom pattern", description: "Your custom rhythm", times: next });
-      };
-
-      const startSession = () => {
-        if (pattern.times[0] < 1 || pattern.times[2] < 1) return;
-        setRunning(true);
-        if (!muted) playCue(PHASES[phaseIndex].toLowerCase());
-      };
-
-      const stopSession = () => {
-        resetSession();
-      };
-
-      return (
-        React.createElement(Box, { className: running ? "h-[100dvh] overflow-hidden bg-pine-900 text-white" : "min-h-screen bg-pine-900 text-white" },
-          React.createElement(Box, { className: running ? "mx-auto max-w-5xl h-full p-3 md:p-4 flex flex-col" : "mx-auto max-w-5xl p-3 md:p-4" },
-            React.createElement(Flex, { align: "center", justify: "space-between", gap: 2, className: running ? "z-10 py-1" : "sticky top-0 z-10 py-1" },
-              React.createElement(Button, { "aria-label": "Open menu", onClick: menu.onOpen, minW: "44px", h: "44px", p: 0 }, "☰"),
-              React.createElement(Text, { fontWeight: "700", fontSize: "lg", letterSpacing: "0.02em" }, "Breathwork"),
-              React.createElement(HStack, { spacing: 2 },
-                React.createElement(Button, { "aria-label": "Toggle mute", onClick: () => setMuted(v => !v), minW: "44px", h: "44px", p: 0 }, muted ? "🔇" : "🔊"),
-                React.createElement(Button, { "aria-label": "Toggle haptics", onClick: () => setHaptic(v => !v), minW: "44px", h: "44px", p: 0 }, haptic ? "📳" : "📴")
-              )
-            ),
-
-            React.createElement(Box, {
-              className: running ? "rounded-none" : "rounded-3xl",
-              bg: "pine.700",
-              boxShadow: "breath",
-              p: running ? 3 : 5,
-              minH: running ? undefined : "42vh",
-              h: running ? "100%" : undefined,
-              display: running ? "grid" : "flex",
-              gridTemplateRows: running ? "auto 1fr auto" : undefined,
-              flexDirection: running ? undefined : "column",
-              alignItems: "center",
-              justifyContent: running ? undefined : "center",
-              textAlign: "center",
-              position: "relative"
-            },
-              running && React.createElement(Flex, { w: "full", justify: "space-between", color: "pine.300", fontVariantNumeric: "tabular-nums", minH: "52px" },
-                React.createElement(Box, null,
-                  React.createElement(Text, null, formatDuration(sessionSeconds)),
-                  React.createElement(Text, null, `${completedBreaths} ${completedBreaths === 1 ? "breath" : "breaths"}`)
-                )
-              ),
-
-              !running && React.createElement(VStack, { spacing: 3 },
-                React.createElement(Text, { fontSize: ["2xl", "3xl"], fontWeight: "700" }, pattern.name),
-                React.createElement(Text, { color: "pine.300" }, patternText),
-                React.createElement(Text, { color: "pine.300" }, `${completedBreaths} breaths completed`),
-                React.createElement(Button, { colorScheme: "teal", onClick: startSession, w: "full" }, "Start")
-              ),
-
-              running && React.createElement(VStack, { spacing: 2, alignSelf: "center", justifySelf: "center", w: "full" },
-                React.createElement(Text, { color: "pine.300", textTransform: "uppercase", letterSpacing: "0.08em", fontSize: ["xl", "2xl"] }, PHASES[phaseIndex]),
-                React.createElement(Text, { fontSize: ["8rem", "10rem"], lineHeight: "0.9", fontWeight: "800", fontVariantNumeric: "tabular-nums" }, remaining),
-                React.createElement(Text, { color: "pine.300" }, patternText)
-              ),
-
-              running && React.createElement(Box, { w: "full", minH: "96px", display: "flex", alignItems: "end", pb: "calc(env(safe-area-inset-bottom, 0px) + 8px)" },
-                React.createElement(Button, { colorScheme: "red", w: "full", onClick: stopSession, h: "56px" }, "Stop")
-              )
-            ),
-
-            !running && React.createElement(VStack, { spacing: 3, mt: 3 },
-              React.createElement(Box, { w: "full", p: 3, bg: "pine.700", rounded: "xl" },
-                React.createElement(Button, { w: "full", onClick: patterns.onOpen }, "Breathing pattern library")
-              ),
-              React.createElement(Box, { w: "full", p: 3, bg: "pine.700", rounded: "xl" },
-                React.createElement(Button, { w: "full", onClick: () => setCustomOpen(v => !v) }, "Custom breathing pattern"),
-                customOpen && React.createElement(VStack, { spacing: 3, align: "stretch", mt: 3 },
-                  React.createElement(Text, { fontWeight: "600" }, "Your breathing pattern"),
-                  React.createElement(Grid, { templateColumns: ["1fr", "1fr 1fr"], gap: 3 },
-                    [
-                      { key: 0, label: "Inhale", err: customErrors.inhale },
-                      { key: 1, label: "Hold after inhale", err: false },
-                      { key: 2, label: "Exhale", err: customErrors.exhale },
-                      { key: 3, label: "Hold after exhale", err: false }
-                    ].map(field => React.createElement(GridItem, { key: field.key },
-                      React.createElement(Text, { fontSize: "sm", color: "pine.300", mb: 1 }, field.label),
-                      React.createElement(HStack, null,
-                        React.createElement(Button, { onClick: () => setCustomTimes(t => t.map((n, i) => i === field.key ? normalize(n - 1) : n)) }, "-"),
-                        React.createElement(Box, {
-                          as: "input",
-                          type: "number",
-                          min: "0",
-                          step: "1",
-                          value: customTimes[field.key],
-                          onChange: e => {
-                            const value = normalize(e.target.value);
-                            setCustomTimes(t => t.map((n, i) => i === field.key ? value : n));
-                            if (field.key === 0) setCustomErrors(v => ({ ...v, inhale: false }));
-                            if (field.key === 2) setCustomErrors(v => ({ ...v, exhale: false }));
-                          },
-                          className: `w-full rounded-md border px-3 py-2 text-center bg-pine-800 ${field.err ? "border-red-400" : "border-pine-500"}`
-                        }),
-                        React.createElement(Button, { onClick: () => setCustomTimes(t => t.map((n, i) => i === field.key ? normalize(n + 1) : n)) }, "+")
-                      )
-                    ))
-                  ),
-                  React.createElement(Button, { colorScheme: "teal", onClick: applyCustomPattern }, "Use this custom pattern")
-                )
-              )
-            )
-          ),
-
-          React.createElement(Drawer, { isOpen: menu.isOpen, placement: "left", onClose: menu.onClose, size: "full" },
-            React.createElement(DrawerOverlay),
-            React.createElement(DrawerContent, { bg: "pine.800" },
-              React.createElement(DrawerHeader, null,
-                React.createElement(Flex, { justify: "space-between", align: "center" },
-                  React.createElement(Text, null, "Menu"),
-                  React.createElement(Button, { "aria-label": "Close menu", onClick: menu.onClose, minW: "44px", h: "44px", p: 0 }, "×")
-                )
-              ),
-              React.createElement(DrawerBody, null,
-                React.createElement(VStack, { spacing: 3, align: "stretch" },
-                  React.createElement(Button, {
-                    onClick: () => { menu.onClose(); patterns.onOpen(); },
-                    justifyContent: "start",
-                    h: "auto",
-                    py: 4,
-                    whiteSpace: "normal"
-                  }, "Breathing patterns - Choose a predefined breathing pattern according to how you want to feel."),
-                  React.createElement(Button, {
-                    onClick: () => { menu.onClose(); voices.onOpen(); },
-                    justifyContent: "start",
-                    h: "auto",
-                    py: 4,
-                    whiteSpace: "normal"
-                  }, "Choose a voice - Select a voice for the spoken guidance.")
-                )
-              )
-            )
-          ),
-
-          React.createElement(Drawer, { isOpen: patterns.isOpen, placement: "left", onClose: patterns.onClose, size: "full" },
-            React.createElement(DrawerOverlay),
-            React.createElement(DrawerContent, { bg: "pine.800" },
-              React.createElement(DrawerHeader, null,
-                React.createElement(Flex, { justify: "space-between", align: "center" },
-                  React.createElement(Text, null, "Breathing patterns"),
-                  React.createElement(Button, { "aria-label": "Close patterns", onClick: patterns.onClose, minW: "44px", h: "44px", p: 0 }, "×")
-                )
-              ),
-              React.createElement(DrawerBody, null,
-                React.createElement(VStack, { spacing: 3, align: "stretch" },
-                  PRESETS.map(p => React.createElement(Button, {
-                    key: p.name,
-                    h: "auto",
-                    py: 4,
-                    justifyContent: "start",
-                    textAlign: "left",
-                    whiteSpace: "normal",
-                    onClick: () => { applyPattern(p); patterns.onClose(); }
-                  }, `${p.name} - ${p.description} (${p.times.join("-")})`))
-                )
-              )
-            )
-          ),
-
-          React.createElement(Drawer, { isOpen: voices.isOpen, placement: "left", onClose: voices.onClose, size: "full" },
-            React.createElement(DrawerOverlay),
-            React.createElement(DrawerContent, { bg: "pine.800" },
-              React.createElement(DrawerHeader, null,
-                React.createElement(Flex, { justify: "space-between", align: "center" },
-                  React.createElement(Text, null, "Choose a voice"),
-                  React.createElement(Button, { "aria-label": "Close voices", onClick: voices.onClose, minW: "44px", h: "44px", p: 0 }, "×")
-                )
-              ),
-              React.createElement(DrawerBody, null,
-                React.createElement(VStack, { spacing: 3, align: "stretch" },
-                  Object.entries(VOICES).map(([key, v]) => React.createElement(Button, {
-                    key,
-                    h: "auto",
-                    py: 4,
-                    justifyContent: "start",
-                    textAlign: "left",
-                    whiteSpace: "normal",
-                    colorScheme: selectedVoice === key ? "teal" : "gray",
-                    variant: selectedVoice === key ? "solid" : "outline",
-                    onClick: () => {
-                      setSelectedVoice(key);
-                      voices.onClose();
-                    }
-                  }, `${v.label} | Feel: ${v.feel} | Best for: ${v.best}`))
-                )
-              )
-            )
+        React.createElement(FullscreenPanel, {
+          isOpen: activePanel === "voices",
+          onClose: closePanels,
+          title: "Choose a voice"
+        },
+          React.createElement(VStack, { align: "stretch", spacing: 3 },
+            Object.entries(VOICES).map(([key, voice]) => React.createElement(ChoiceCard, {
+              key,
+              description: `Feel: ${voice.feel}`,
+              meta: `Best for: ${voice.best}`,
+              onClick: () => {
+                setSelectedVoice(key);
+                closePanels();
+              },
+              selected: selectedVoice === key,
+              title: `${voice.name} (${voice.tone})`
+            }))
           )
         )
       );
     }
 
-    const root = createRoot(document.getElementById("root"));
-    root.render(
+    function Header({ hapticsEnabled, muted, onMenu, onToggleHaptics, onToggleMute, running }) {
+      return React.createElement(Flex, {
+        align: "center",
+        className: running ? "shrink-0 pb-3" : "sticky top-0 z-20 bg-pine-900/95 pb-3 pt-1 backdrop-blur",
+        justify: "space-between"
+      },
+        React.createElement(Button, {
+          "aria-label": "Open menu",
+          className: "focus-ring",
+          minW: "44px",
+          onClick: onMenu,
+          variant: "solid"
+        }, "☰"),
+        React.createElement(Text, {
+          className: "select-none",
+          fontSize: "lg",
+          fontWeight: 800,
+          letterSpacing: "0.03em"
+        }, "Breathwork"),
+        React.createElement(HStack, { spacing: 2 },
+          React.createElement(Button, {
+            "aria-label": muted ? "Unmute voice guidance" : "Mute voice guidance",
+            className: "focus-ring",
+            minW: "44px",
+            onClick: onToggleMute
+          }, muted ? "🔇" : "🔊"),
+          React.createElement(Button, {
+            "aria-label": hapticsEnabled ? "Disable haptic feedback" : "Enable haptic feedback",
+            className: "focus-ring",
+            minW: "44px",
+            onClick: onToggleHaptics
+          }, hapticsEnabled ? "📳" : "📴")
+        )
+      );
+    }
+
+    function BreathingCoach({ completedBreaths, duration, onStart, onStop, pattern, patternText, phaseLabel, remaining, running }) {
+      if (running) {
+        return React.createElement(Box, {
+          "aria-live": "polite",
+          className: "grid min-h-0 flex-1 rounded-[2rem] bg-pine-800 shadow-breath",
+          style: { gridTemplateRows: "72px minmax(0, 1fr) 112px" }
+        },
+          React.createElement(Flex, {
+            align: "center",
+            className: "px-4 text-pine-300",
+            justify: "space-between"
+          },
+            React.createElement(Box, { fontVariantNumeric: "tabular-nums" },
+              React.createElement(Text, { fontSize: "sm" }, "Duration"),
+              React.createElement(Text, { color: "pine.100", fontSize: "xl", fontWeight: 800 }, formatDuration(duration))
+            ),
+            React.createElement(Box, { fontVariantNumeric: "tabular-nums", textAlign: "right" },
+              React.createElement(Text, { fontSize: "sm" }, "Breaths"),
+              React.createElement(Text, { color: "pine.100", fontSize: "xl", fontWeight: 800 }, completedBreaths)
+            )
+          ),
+          React.createElement(VStack, {
+            align: "center",
+            className: "min-h-0 justify-center px-4 pb-4 text-center",
+            spacing: 2
+          },
+            React.createElement(Text, {
+              color: "pine.300",
+              fontSize: ["xl", "2xl"],
+              fontWeight: 800,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase"
+            }, phaseLabel),
+            React.createElement(Text, {
+              className: "text-[clamp(6rem,31vw,13rem)]",
+              fontWeight: 900,
+              lineHeight: 0.85,
+              fontVariantNumeric: "tabular-nums"
+            }, remaining),
+            React.createElement(Text, { color: "pine.300", fontSize: ["lg", "xl"] }, patternText)
+          ),
+          React.createElement(Box, {
+            className: "flex min-h-24 items-end px-4 bottom-safe"
+          },
+            React.createElement(Button, {
+              className: "focus-ring",
+              colorScheme: "red",
+              h: "56px",
+              onClick: onStop,
+              w: "full"
+            }, "Stop")
+          )
+        );
+      }
+
+      return React.createElement(Box, {
+        className: "flex min-h-[42vh] flex-1 flex-col items-center justify-center rounded-[2rem] bg-pine-800 p-6 text-center shadow-breath"
+      },
+        React.createElement(VStack, { spacing: 4 },
+          React.createElement(Box, null,
+            React.createElement(Text, { fontSize: ["3xl", "4xl"], fontWeight: 900 }, pattern.name),
+            React.createElement(Text, { color: "pine.300", fontSize: ["xl", "2xl"], fontWeight: 700, mt: 1 }, patternText)
+          ),
+          React.createElement(Text, { color: "pine.300" }, `${completedBreaths} breaths completed`),
+          React.createElement(Button, {
+            className: "focus-ring",
+            colorScheme: "teal",
+            h: "56px",
+            onClick: onStart,
+            px: 10
+          }, "Start")
+        )
+      );
+    }
+
+    function CustomPattern({ customErrors, customOpen, customTimes, onApply, onToggle, onUpdate }) {
+      const fields = [
+        { index: 0, label: "Inhale", error: customErrors.inhale },
+        { index: 1, label: "Hold after inhale", error: false },
+        { index: 2, label: "Exhale", error: customErrors.exhale },
+        { index: 3, label: "Hold after exhale", error: false }
+      ];
+
+      return React.createElement(Box, {
+        className: "rounded-3xl bg-pine-800 p-3"
+      },
+        React.createElement(Button, {
+          "aria-expanded": customOpen,
+          className: "focus-ring",
+          h: "52px",
+          onClick: onToggle,
+          w: "full"
+        }, "Custom breathing pattern"),
+        customOpen && React.createElement(VStack, {
+          align: "stretch",
+          className: "pt-4",
+          spacing: 4
+        },
+          React.createElement(Text, { fontSize: "lg", fontWeight: 800 }, "Your breathing pattern"),
+          React.createElement(Grid, { templateColumns: "repeat(2, minmax(0, 1fr))", gap: 3 },
+            fields.map(field => React.createElement(GridItem, { key: field.index },
+              React.createElement(Text, { color: "pine.300", fontSize: "sm", mb: 1 }, field.label),
+              React.createElement(HStack, { spacing: 1 },
+                React.createElement(Button, {
+                  "aria-label": `Subtract one second from ${field.label}`,
+                  className: "focus-ring",
+                  minW: "40px",
+                  onClick: () => onUpdate(field.index, customTimes[field.index] - 1),
+                  px: 0
+                }, "−"),
+                React.createElement(Box, {
+                  "aria-invalid": field.error,
+                  "aria-label": `${field.label} seconds`,
+                  as: "input",
+                  className: `min-w-0 rounded-xl border bg-pine-950 px-2 py-3 text-center text-pine-100 focus-ring ${field.error ? "border-red-400" : "border-pine-500"}`,
+                  inputMode: "numeric",
+                  min: 0,
+                  onChange: event => onUpdate(field.index, event.target.value),
+                  pattern: "[0-9]*",
+                  step: 1,
+                  type: "number",
+                  value: customTimes[field.index],
+                  w: "full"
+                }),
+                React.createElement(Button, {
+                  "aria-label": `Add one second to ${field.label}`,
+                  className: "focus-ring",
+                  minW: "40px",
+                  onClick: () => onUpdate(field.index, customTimes[field.index] + 1),
+                  px: 0
+                }, "+")
+              )
+            ))
+          ),
+          (customErrors.inhale || customErrors.exhale) && React.createElement(Text, {
+            color: "red.200",
+            fontSize: "sm"
+          }, "Inhale and exhale must be at least 1 second."),
+          React.createElement(Button, {
+            className: "focus-ring",
+            colorScheme: "teal",
+            h: "52px",
+            onClick: onApply,
+            w: "full"
+          }, "Use this custom pattern")
+        )
+      );
+    }
+
+    function FullscreenPanel({ children, isOpen, onClose, title }) {
+      if (!isOpen) return null;
+
+      return React.createElement(Box, {
+        "aria-modal": "true",
+        className: "fixed inset-0 z-50 overflow-y-auto bg-pine-800 text-pine-100",
+        role: "dialog"
+      },
+        React.createElement(Box, { className: "mx-auto min-h-[100dvh] max-w-3xl screen-safe py-4" },
+          React.createElement(Flex, {
+            align: "center",
+            className: "sticky top-0 z-10 bg-pine-800/95 pb-4 backdrop-blur",
+            justify: "space-between"
+          },
+            React.createElement(Box, { w: "44px" }),
+            React.createElement(Text, { fontSize: "2xl", fontWeight: 900 }, title),
+            React.createElement(Button, {
+              "aria-label": `Close ${title}`,
+              className: "focus-ring",
+              minW: "44px",
+              onClick: onClose,
+              px: 0
+            }, "×")
+          ),
+          children
+        )
+      );
+    }
+
+    function MenuCard({ description, onClick, title }) {
+      return React.createElement(Button, {
+        className: "focus-ring",
+        h: "auto",
+        justifyContent: "flex-start",
+        onClick,
+        p: 5,
+        textAlign: "left",
+        whiteSpace: "normal",
+        w: "full"
+      },
+        React.createElement(Box, null,
+          React.createElement(Text, { fontWeight: 900 }, title),
+          React.createElement(Text, { fontSize: "sm", fontWeight: 500, mt: 1 }, description)
+        )
+      );
+    }
+
+    function ChoiceCard({ description, meta, onClick, selected, title }) {
+      return React.createElement(Button, {
+        "aria-pressed": selected,
+        className: `focus-ring ${selected ? "ring-2 ring-pine-300" : ""}`,
+        colorScheme: selected ? "teal" : "gray",
+        h: "auto",
+        justifyContent: "flex-start",
+        onClick,
+        p: 5,
+        textAlign: "left",
+        variant: selected ? "solid" : "outline",
+        whiteSpace: "normal",
+        w: "full"
+      },
+        React.createElement(Box, null,
+          React.createElement(Text, { fontWeight: 900 }, selected ? `✓ ${title}` : title),
+          React.createElement(Text, { fontSize: "sm", fontWeight: 600, mt: 1 }, description),
+          React.createElement(Text, { fontSize: "sm", fontWeight: 800, mt: 2 }, meta)
+        )
+      );
+    }
+
+    createRoot(document.getElementById("root")).render(
       React.createElement(ChakraProvider, { theme: chakraTheme }, React.createElement(App))
     );
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+        navigator.serviceWorker.register(`./service-worker.js?v=${Date.now()}`).catch(() => {});
       });
     }
   </script>
