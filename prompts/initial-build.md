@@ -74,6 +74,13 @@ Do not modify:
 ```text
 app/audio/
 ```
+Do not modify:
+
+```text
+docs/
+thirdparty/
+prompts/
+```
 
 unless explicitly required by the user.
 
