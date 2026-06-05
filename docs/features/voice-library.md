@@ -26,7 +26,3 @@ Feel: morning sunlight through a window
 Best for: energizing breathwork, Wim Hof style, activation
 
 The selected voice should be be clearly indicated by a visual clue.
-
-If a sound is shorter than an actual second (unit of time), please a pause to complete one second before playing the next one. This will ensure a consistency in the breathing pattern.
-
-The actual second sound is not pronounced when the words inhale, exhale and hold are pronounced.
