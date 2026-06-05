@@ -6,7 +6,8 @@
 
   ## Audio files
 
-  Audio files are stored by selected voice:
+  Audio files are stored by selected voice.
+  Use the existing MP3 files from the selected voice folder:
 
   - `app/audio/velvet/`
   - `app/audio/heart/`
@@ -19,6 +20,8 @@
   - `hold.mp3`
   - `one.mp3` through `thirty.mp3`
 
+Do not generate new audio files.
+
 ## Playback sequence
 
   At the start of each breathing phase:
@@ -28,9 +31,11 @@
      - hold phase: `hold.mp3`
      - exhale phase: `exhale.mp3`
 
-  2. Do not play the number for that same second.
+  2. The phase word replaces the number for that same second.
 
-  3. On each following second in the same phase, play the remaining countdown number.
+  3. Do not play the number for that same second.
+
+  4. On each following second in the same phase, play the remaining countdown number.
 
 Example for a 4-second inhale:
 
@@ -49,12 +54,31 @@ Example for a 7-second hold:
   - second 2: play `two.mp3`
   - second 1: play `one.mp3`
 
-## Timing rule
+## Timing requirements
 
-  Each cue occupies one timing second.
+Audio playback must not advance the timer; the visual timer remains the source of truth.
 
-  If an audio file is shorter than one second, the app waits until the next second before playing the next cue.
-  Audio playback must not advance the timer; the visual timer remains the source of truth.
+Each cue occupies one timing second.
+
+The app should trigger exactly one spoken cue per displayed countdown second when audio is enabled:
+
+- phase word on the first displayed second of a phase
+- countdown number on each following displayed second in that phase
+
+Do not play the phase word and number at the same time.
+
+Do not let short audio files compress the timer.
+
+If an audio file is shorter than one second, wait until the next countdown second before playing the next cue.
+
+## Voice selection requirements
+
+Use the currently selected voice folder for all spoken cues.
+
+When the voice changes:
+
+- preload all MP3 files from the newly selected voice folder
+- future cues must use the new folder
 
 ## Skipped phases
 
@@ -62,24 +86,23 @@ Example for a 7-second hold:
 
   No audio cue is played for skipped phases.
 
-## Mute behavior
+## Mute and haptic requirements
 
-  When mute is enabled:
+When mute is enabled:
 
-  - No phase cue is played.
-  - No countdown number is played.
-  - The visual timer continues normally.
-  - Haptic feedback may still run if enabled.
+- do not play phase cues
+- do not play countdown number cues
+- keep the visual timer running
+- keep haptic feedback behavior unchanged if haptics are enabled
+
+When mute is disabled again, spoken cues should resume on the next eligible countdown second or phase transition.
 
 ## Preloading
+- Force the app to be downloaded upon each refresh.
+- When the app starts, preload all MP3 files for the selected voice.
+- When the selected voice changes, preload all MP3 files for the new voice.
 
-  When the app starts, preload all MP3 files for the selected voice.
-
-  When the selected voice changes, preload all MP3 files for the new voice.
-
-  Audio files should not be cached by the service worker.
-
-Key Clarification
-  The important sentence is this:
-
-  - “At phase start, play the phase word instead of the number for that same second.”
+## Caching requirements
+- Do not cache app/code files.
+- Keep the service worker fetch-only/no-store behavior.
+- Do not cache audio files in the service worker.
