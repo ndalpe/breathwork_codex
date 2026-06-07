@@ -97,12 +97,16 @@ When mute is enabled:
 
 When mute is disabled again, spoken cues should resume on the next eligible countdown second or phase transition.
 
-## Preloading
-- Force the app to be downloaded upon each refresh.
-- When the app starts, preload all MP3 files for the selected voice.
-- When the selected voice changes, preload all MP3 files for the new voice.
+## Preloading and playback
+
+- When the app starts, preload all MP3 files for the selected voice once.
+- When the selected voice changes, preload all MP3 files for the new voice once.
+- During a session, spoken cues must be played from the already-preloaded audio objects.
+- Do not create a new network request each time a cue is played.
+- If the same cue is needed multiple times, reuse or clone the preloaded audio element/buffer in memory.
 
 ## Caching requirements
-- Do not cache app/code files.
-- Keep the service worker fetch-only/no-store behavior.
-- Do not cache audio files in the service worker.
+
+- Do not cache app/code files in the service worker.
+- Do not store audio files in the service worker Cache Storage.
+- The no-cache service worker rule means audio files should not be persistently cached by the service worker; it does not mean audio should be re-downloaded on every playback.
