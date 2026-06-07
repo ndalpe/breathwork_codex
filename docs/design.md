@@ -15,8 +15,10 @@
 
 ### Breathing Coach
 - Below the header is the breathing coach (or BC for short)
-- When no breathwork is running, the BC only contains the currently selected breathing pattern name, followed by the breath count below it. For example Box breathing 4-4-4-4. The BC also contains a button to start the breathwork.
-- When a breathwork is running the breathing coach takes all the screen space and contains the breathwork information to guide the user.
+- The currently selected breathing pattren should have a slightly beigger font the the number of seconds.
+- The middle zone block must never overlap with the stop button.
+- Required safe spacing: reserve at least 96px bottom space for the bottom zone (including mobile safe-area inset).
+- On mobile, the stop button must stay within viewport and the countdown digits must remain fully visible above it.
 
 ### Breathing pattern library button
 - When no breathwork is running, display a button below the BC so the user can access the breathing pattern library.
