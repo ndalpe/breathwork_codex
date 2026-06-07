@@ -71,6 +71,8 @@ Do not let short audio files compress the timer.
 
 If an audio file is shorter than one second, wait until the next countdown second before playing the next cue.
 
+Audio cues follow the positive countdown seconds shown by the Breathing Coach; no cue is played for `0` because `0` is never displayed.
+
 ## Voice selection requirements
 
 Use the currently selected voice folder for all spoken cues.
