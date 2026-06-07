@@ -1,0 +1,202 @@
+Processing heart...
+  → eighteen.mp3 changed
+     original: 0.966531s | silence added after audio: 0.033s | final: 1.0s
+  → eight.mp3 changed
+     original: 0.731429s | silence added after audio: 0.269s | final: 1.0s
+  → eleven.mp3 changed
+     original: 0.835918s | silence added after audio: 0.164s | final: 1.0s
+  → exhale.mp3 unchanged
+     original: 1.018776s | silence added after audio: 0.000s | final: 1.018776s
+  → fifteen.mp3 changed
+     original: 0.914286s | silence added after audio: 0.086s | final: 1.0s
+  → five.mp3 changed
+     original: 0.862041s | silence added after audio: 0.138s | final: 1.0s
+  → four.mp3 changed
+     original: 0.731429s | silence added after audio: 0.269s | final: 1.0s
+  → fourteen.mp3 unchanged
+     original: 1.071020s | silence added after audio: 0.000s | final: 1.071020s
+  → hold.mp3 changed
+     original: 0.835918s | silence added after audio: 0.164s | final: 1.0s
+  → inhale.mp3 unchanged
+     original: 1.071020s | silence added after audio: 0.000s | final: 1.071020s
+  → nine.mp3 changed
+     original: 0.783673s | silence added after audio: 0.216s | final: 1.0s
+  → nineteen.mp3 changed
+     original: 0.914286s | silence added after audio: 0.086s | final: 1.0s
+  → one.mp3 changed
+     original: 0.548571s | silence added after audio: 0.451s | final: 1.0s
+  → seven.mp3 changed
+     original: 0.862041s | silence added after audio: 0.138s | final: 1.0s
+  → seventeen.mp3 unchanged
+     original: 1.149388s | silence added after audio: 0.000s | final: 1.149388s
+  → six.mp3 changed
+     original: 0.731429s | silence added after audio: 0.269s | final: 1.0s
+  → sixteen.mp3 unchanged
+     original: 1.097143s | silence added after audio: 0.000s | final: 1.097143s
+  → ten.mp3 changed
+     original: 0.731429s | silence added after audio: 0.269s | final: 1.0s
+  → thirteen.mp3 unchanged
+     original: 1.018776s | silence added after audio: 0.000s | final: 1.018776s
+  → thirty.mp3 changed
+     original: 0.835918s | silence added after audio: 0.164s | final: 1.0s
+  → three.mp3 changed
+     original: 0.731429s | silence added after audio: 0.269s | final: 1.0s
+  → twelve.mp3 changed
+     original: 0.731429s | silence added after audio: 0.269s | final: 1.0s
+  → twenty-eight.mp3 unchanged
+     original: 1.201633s | silence added after audio: 0.000s | final: 1.201633s
+  → twenty-five.mp3 unchanged
+     original: 1.253878s | silence added after audio: 0.000s | final: 1.253878s
+  → twenty-four.mp3 unchanged
+     original: 1.071020s | silence added after audio: 0.000s | final: 1.071020s
+  → twenty.mp3 changed
+     original: 0.862041s | silence added after audio: 0.138s | final: 1.0s
+  → twenty-nine.mp3 unchanged
+     original: 1.018776s | silence added after audio: 0.000s | final: 1.018776s
+  → twenty-one.mp3 unchanged
+     original: 1.253878s | silence added after audio: 0.000s | final: 1.253878s
+  → twenty-seven.mp3 unchanged
+     original: 1.097143s | silence added after audio: 0.000s | final: 1.097143s
+  → twenty-six.mp3 unchanged
+     original: 1.332245s | silence added after audio: 0.000s | final: 1.332245s
+  → twenty-three.mp3 changed
+     original: 0.914286s | silence added after audio: 0.086s | final: 1.0s
+  → twenty-two.mp3 unchanged
+     original: 1.149388s | silence added after audio: 0.000s | final: 1.149388s
+  → two.mp3 changed
+     original: 0.679184s | silence added after audio: 0.321s | final: 1.0s
+Processing velvet...
+  → eighteen.mp3 unchanged
+     original: 1.018776s | silence added after audio: 0.000s | final: 1.018776s
+  → eight.mp3 changed
+     original: 0.731429s | silence added after audio: 0.269s | final: 1.0s
+  → eleven.mp3 changed
+     original: 0.862041s | silence added after audio: 0.138s | final: 1.0s
+  → exhale.mp3 changed
+     original: 0.862041s | silence added after audio: 0.138s | final: 1.0s
+  → fifteen.mp3 unchanged
+     original: 1.071020s | silence added after audio: 0.000s | final: 1.071020s
+  → five.mp3 changed
+     original: 0.835918s | silence added after audio: 0.164s | final: 1.0s
+  → four.mp3 changed
+     original: 0.731429s | silence added after audio: 0.269s | final: 1.0s
+  → fourteen.mp3 unchanged
+     original: 1.018776s | silence added after audio: 0.000s | final: 1.018776s
+  → hold.mp3 changed
+     original: 0.835918s | silence added after audio: 0.164s | final: 1.0s
+  → inhale.mp3 changed
+     original: 0.862041s | silence added after audio: 0.138s | final: 1.0s
+  → nine.mp3 changed
+     original: 0.731429s | silence added after audio: 0.269s | final: 1.0s
+  → nineteen.mp3 changed
+     original: 0.966531s | silence added after audio: 0.033s | final: 1.0s
+  → one.mp3 changed
+     original: 0.731429s | silence added after audio: 0.269s | final: 1.0s
+  → seven.mp3 changed
+     original: 0.731429s | silence added after audio: 0.269s | final: 1.0s
+  → seventeen.mp3 unchanged
+     original: 1.071020s | silence added after audio: 0.000s | final: 1.071020s
+  → six.mp3 changed
+     original: 0.783673s | silence added after audio: 0.216s | final: 1.0s
+  → sixteen.mp3 unchanged
+     original: 1.071020s | silence added after audio: 0.000s | final: 1.071020s
+  → ten.mp3 changed
+     original: 0.731429s | silence added after audio: 0.269s | final: 1.0s
+  → thirteen.mp3 changed
+     original: 0.914286s | silence added after audio: 0.086s | final: 1.0s
+  → thirty.mp3 changed
+     original: 0.835918s | silence added after audio: 0.164s | final: 1.0s
+  → three.mp3 changed
+     original: 0.679184s | silence added after audio: 0.321s | final: 1.0s
+  → twelve.mp3 unchanged
+     original: 1.071020s | silence added after audio: 0.000s | final: 1.071020s
+  → twenty-eight.mp3 changed
+     original: 0.966531s | silence added after audio: 0.033s | final: 1.0s
+  → twenty-five.mp3 unchanged
+     original: 1.149388s | silence added after audio: 0.000s | final: 1.149388s
+  → twenty-four.mp3 changed
+     original: 0.862041s | silence added after audio: 0.138s | final: 1.0s
+  → twenty.mp3 changed
+     original: 0.835918s | silence added after audio: 0.164s | final: 1.0s
+  → twenty-nine.mp3 unchanged
+     original: 1.071020s | silence added after audio: 0.000s | final: 1.071020s
+  → twenty-one.mp3 unchanged
+     original: 1.018776s | silence added after audio: 0.000s | final: 1.018776s
+  → twenty-seven.mp3 unchanged
+     original: 1.201633s | silence added after audio: 0.000s | final: 1.201633s
+  → twenty-six.mp3 unchanged
+     original: 1.097143s | silence added after audio: 0.000s | final: 1.097143s
+  → twenty-three.mp3 unchanged
+     original: 1.018776s | silence added after audio: 0.000s | final: 1.018776s
+  → twenty-two.mp3 unchanged
+     original: 1.018776s | silence added after audio: 0.000s | final: 1.018776s
+  → two.mp3 changed
+     original: 0.679184s | silence added after audio: 0.321s | final: 1.0s
+Processing light...
+  → eighteen.mp3 changed
+     original: 0.835918s | silence added after audio: 0.164s | final: 1.0s
+  → eight.mp3 changed
+     original: 0.653061s | silence added after audio: 0.347s | final: 1.0s
+  → eleven.mp3 changed
+     original: 0.835918s | silence added after audio: 0.164s | final: 1.0s
+  → exhale.mp3 changed
+     original: 0.914286s | silence added after audio: 0.086s | final: 1.0s
+  → fifteen.mp3 changed
+     original: 0.914286s | silence added after audio: 0.086s | final: 1.0s
+  → five.mp3 changed
+     original: 0.783673s | silence added after audio: 0.216s | final: 1.0s
+  → four.mp3 changed
+     original: 0.679184s | silence added after audio: 0.321s | final: 1.0s
+  → fourteen.mp3 unchanged
+     original: 1.018776s | silence added after audio: 0.000s | final: 1.018776s
+  → hold.mp3 changed
+     original: 0.731429s | silence added after audio: 0.269s | final: 1.0s
+  → inhale.mp3 changed
+     original: 0.862041s | silence added after audio: 0.138s | final: 1.0s
+  → nine.mp3 changed
+     original: 0.731429s | silence added after audio: 0.269s | final: 1.0s
+  → nineteen.mp3 changed
+     original: 0.914286s | silence added after audio: 0.086s | final: 1.0s
+  → one.mp3 changed
+     original: 0.653061s | silence added after audio: 0.347s | final: 1.0s
+  → seven.mp3 changed
+     original: 0.731429s | silence added after audio: 0.269s | final: 1.0s
+  → seventeen.mp3 unchanged
+     original: 1.018776s | silence added after audio: 0.000s | final: 1.018776s
+  → six.mp3 changed
+     original: 0.783673s | silence added after audio: 0.216s | final: 1.0s
+  → sixteen.mp3 unchanged
+     original: 1.071020s | silence added after audio: 0.000s | final: 1.071020s
+  → ten.mp3 changed
+     original: 0.731429s | silence added after audio: 0.269s | final: 1.0s
+  → thirteen.mp3 unchanged
+     original: 1.071020s | silence added after audio: 0.000s | final: 1.071020s
+  → thirty.mp3 changed
+     original: 0.731429s | silence added after audio: 0.269s | final: 1.0s
+  → three.mp3 changed
+     original: 0.679184s | silence added after audio: 0.321s | final: 1.0s
+  → twelve.mp3 changed
+     original: 0.862041s | silence added after audio: 0.138s | final: 1.0s
+  → twenty-eight.mp3 unchanged
+     original: 1.018776s | silence added after audio: 0.000s | final: 1.018776s
+  → twenty-five.mp3 unchanged
+     original: 1.071020s | silence added after audio: 0.000s | final: 1.071020s
+  → twenty-four.mp3 unchanged
+     original: 1.018776s | silence added after audio: 0.000s | final: 1.018776s
+  → twenty.mp3 changed
+     original: 0.835918s | silence added after audio: 0.164s | final: 1.0s
+  → twenty-nine.mp3 unchanged
+     original: 1.071020s | silence added after audio: 0.000s | final: 1.071020s
+  → twenty-one.mp3 changed
+     original: 0.966531s | silence added after audio: 0.033s | final: 1.0s
+  → twenty-seven.mp3 unchanged
+     original: 1.071020s | silence added after audio: 0.000s | final: 1.071020s
+  → twenty-six.mp3 unchanged
+     original: 1.201633s | silence added after audio: 0.000s | final: 1.201633s
+  → twenty-three.mp3 unchanged
+     original: 1.071020s | silence added after audio: 0.000s | final: 1.071020s
+  → twenty-two.mp3 unchanged
+     original: 1.018776s | silence added after audio: 0.000s | final: 1.018776s
+  → two.mp3 changed
+     original: 0.679184s | silence added after audio: 0.321s | final: 1.0s
+✨ All files processed into output/processed

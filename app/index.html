@@ -280,6 +280,12 @@
       return `${String(minutes).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`;
     };
 
+    const cueForDisplayedSecond = (times, phaseIndex, remaining) => {
+      if (remaining < 1) return null;
+      if (remaining === times[phaseIndex]) return PHASES[phaseIndex].key;
+      return String(remaining);
+    };
+
     function App() {
       const [pattern, setPattern] = useState(PRESETS[0]);
       const [selectedVoice, setSelectedVoice] = useState(() => localStorage.getItem(STORAGE_KEYS.voice) || "velvet");
@@ -295,8 +301,9 @@
       const [duration, setDuration] = useState(0);
       const [completedBreaths, setCompletedBreaths] = useState(0);
       const audioRef = useRef({});
+      const lastCueRef = useRef("");
+      const sessionIdRef = useRef(0);
       const tickRef = useRef(null);
-      const preloadTokenRef = useRef("");
 
       const selectedPatternText = useMemo(() => patternText(pattern.times), [pattern]);
 
@@ -307,23 +314,30 @@
         navigator.vibrate(durationMs);
       }, [hapticsEnabled]);
 
-      const playCue = useCallback((cue, token = preloadTokenRef.current) => {
-        if (muted) return;
+      const playCue = useCallback(cue => {
+        if (muted) return false;
         const key = String(cue).toLowerCase();
-        const file = CLIPS[key];
-        if (!file) return;
+        const audio = audioRef.current[key];
+        if (!audio) return false;
 
         try {
-          const audio = audioRef.current[key] || new Audio(`./audio/${selectedVoice}/${file}?v=${token}`);
+          audio.pause();
           audio.currentTime = 0;
           audio.play().catch(() => {});
+          return true;
         } catch (_) {
-          // Audio playback can be blocked until a user gesture; the timer should continue.
+          return false;
         }
-      }, [muted, selectedVoice]);
+      }, [muted]);
 
       const resetSession = useCallback((nextPattern = pattern) => {
         const startPhase = firstPlayablePhase(nextPattern.times);
+        sessionIdRef.current += 1;
+        lastCueRef.current = "";
+        Object.values(audioRef.current).forEach(audio => {
+          audio.pause();
+          audio.currentTime = 0;
+        });
         setRunning(false);
         setPhaseIndex(startPhase);
         setRemaining(nextPattern.times[startPhase]);
@@ -341,14 +355,24 @@
 
       const startSession = () => {
         const startPhase = firstPlayablePhase(pattern.times);
+        const startRemaining = pattern.times[startPhase];
+        const nextSessionId = sessionIdRef.current + 1;
+        const firstCue = cueForDisplayedSecond(pattern.times, startPhase, startRemaining);
         setActivePanel(null);
         setCustomOpen(false);
         setDuration(0);
         setCompletedBreaths(0);
         setPhaseIndex(startPhase);
-        setRemaining(pattern.times[startPhase]);
+        setRemaining(startRemaining);
         setRunning(true);
-        playCue(PHASES[startPhase].key);
+        sessionIdRef.current = nextSessionId;
+        lastCueRef.current = "";
+        if (firstCue) {
+          const cueKey = `${nextSessionId}:${startPhase}:${startRemaining}:${firstCue}`;
+          if (playCue(firstCue)) {
+            lastCueRef.current = cueKey;
+          }
+        }
         vibrate(160);
       };
 
@@ -381,18 +405,24 @@
 
       useEffect(() => {
         localStorage.setItem(STORAGE_KEYS.voice, selectedVoice);
-        const token = String(Date.now());
-        preloadTokenRef.current = token;
         const loaded = {};
 
         Object.entries(CLIPS).forEach(([key, file]) => {
-          const audio = new Audio(`./audio/${selectedVoice}/${file}?v=${token}`);
+          const audio = new Audio(`./audio/${selectedVoice}/${file}`);
           audio.preload = "auto";
           audio.load();
           loaded[key] = audio;
         });
 
         audioRef.current = loaded;
+
+        return () => {
+          Object.values(loaded).forEach(audio => {
+            audio.pause();
+            audio.removeAttribute("src");
+            audio.load();
+          });
+        };
       }, [selectedVoice]);
 
       useEffect(() => {
@@ -425,9 +455,13 @@
         if (!running) return;
 
         if (remaining > 0) {
-          if (remaining !== pattern.times[phaseIndex]) {
-            playCue(remaining);
-            vibrate(45);
+          const cue = cueForDisplayedSecond(pattern.times, phaseIndex, remaining);
+          const cueKey = `${sessionIdRef.current}:${phaseIndex}:${remaining}:${cue}`;
+          if (cue && lastCueRef.current !== cueKey) {
+            if (playCue(cue)) {
+              lastCueRef.current = cueKey;
+            }
+            vibrate(remaining === pattern.times[phaseIndex] ? 180 : 45);
           }
           return;
         }
@@ -438,8 +472,6 @@
         if (next.completedCycle) {
           setCompletedBreaths(count => count + 1);
         }
-        playCue(PHASES[next.phaseIndex].key);
-        vibrate(180);
       }, [phaseIndex, pattern.times, playCue, remaining, running, vibrate]);
 
       return React.createElement(Box, {
