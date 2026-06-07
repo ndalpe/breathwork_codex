@@ -13,6 +13,7 @@
 - Add multi-language support for the voices
 
 ## Phase 2 – Immersion
+- Add "I am" meditation on exhale.
 - Crossfade audio
 - Background ambient sound
 - Add custom ambient sound from Youtube
