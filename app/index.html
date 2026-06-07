@@ -302,6 +302,7 @@
       const [completedBreaths, setCompletedBreaths] = useState(0);
       const audioRef = useRef({});
       const lastCueRef = useRef("");
+      const phaseIndexRef = useRef(firstPlayablePhase(PRESETS[0].times));
       const sessionIdRef = useRef(0);
       const tickRef = useRef(null);
 
@@ -340,6 +341,7 @@
         });
         setRunning(false);
         setPhaseIndex(startPhase);
+        phaseIndexRef.current = startPhase;
         setRemaining(nextPattern.times[startPhase]);
         setDuration(0);
         setCompletedBreaths(0);
@@ -363,6 +365,7 @@
         setDuration(0);
         setCompletedBreaths(0);
         setPhaseIndex(startPhase);
+        phaseIndexRef.current = startPhase;
         setRemaining(startRemaining);
         setRunning(true);
         sessionIdRef.current = nextSessionId;
@@ -442,14 +445,24 @@
 
         tickRef.current = window.setInterval(() => {
           setDuration(seconds => seconds + 1);
-          setRemaining(seconds => seconds - 1);
+          setRemaining(seconds => {
+            if (seconds > 1) return seconds - 1;
+
+            const next = nextPlayablePhase(pattern.times, phaseIndexRef.current);
+            phaseIndexRef.current = next.phaseIndex;
+            setPhaseIndex(next.phaseIndex);
+            if (next.completedCycle) {
+              setCompletedBreaths(count => count + 1);
+            }
+            return pattern.times[next.phaseIndex];
+          });
         }, 1000);
 
         return () => {
           window.clearInterval(tickRef.current);
           tickRef.current = null;
         };
-      }, [running]);
+      }, [pattern.times, running]);
 
       useEffect(() => {
         if (!running) return;
@@ -464,13 +477,6 @@
             vibrate(remaining === pattern.times[phaseIndex] ? 180 : 45);
           }
           return;
-        }
-
-        const next = nextPlayablePhase(pattern.times, phaseIndex);
-        setPhaseIndex(next.phaseIndex);
-        setRemaining(pattern.times[next.phaseIndex]);
-        if (next.completedCycle) {
-          setCompletedBreaths(count => count + 1);
         }
       }, [phaseIndex, pattern.times, playCue, remaining, running, vibrate]);
 
@@ -676,7 +682,6 @@
             React.createElement(Text, { fontSize: ["3xl", "4xl"], fontWeight: 900 }, pattern.name),
             React.createElement(Text, { color: "pine.300", fontSize: ["xl", "2xl"], fontWeight: 700, mt: 1 }, patternText)
           ),
-          React.createElement(Text, { color: "pine.300" }, `${completedBreaths} breaths completed`),
           React.createElement(Button, {
             className: "focus-ring",
             colorScheme: "teal",
