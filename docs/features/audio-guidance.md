@@ -101,8 +101,18 @@ When mute is disabled again, spoken cues should resume on the next eligible coun
 
 - When the app starts, preload all MP3 files for the selected voice once.
 - When the selected voice changes, preload all MP3 files for the new voice once.
+- The app must create one reusable in-memory audio player per cue.
+- Each cue should be loaded into a persistent `Audio` element or equivalent reusable audio buffer.
+- During a session, spoken cues must be played from the already-preloaded audio player.
+- Do not create a new `Audio` object every time a cue is played.
 - During a session, spoken cues must be played from the already-preloaded audio objects.
 - Do not create a new network request each time a cue is played.
+- When replaying a cue, reset and reuse the existing preloaded player:
+  - pause the existing player if needed
+  - set playback position back to the beginning
+  - play the same preloaded player again
+- If a cue is already playing when it is requested again, restart that same preloaded cue rather than creating another audio object.
+- The implementation should remain stable during long sessions and must not accumulate new audio objects over time.
 - If the same cue is needed multiple times, reuse or clone the preloaded audio element/buffer in memory.
 
 ## Caching requirements
