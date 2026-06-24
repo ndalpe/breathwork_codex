@@ -11,4 +11,15 @@ Design a flexible breathwork app that can adapt to breathing technique, current 
 
 ## Tech stack
 - As light and lean as possible
-- Use ReactJS, Tailwind and Chakra UI
+- ReactJS, Vite, and Chakra UI
+
+## Development
+
+Requires Node.js 20 or newer.
+
+```sh
+npm install
+npm run dev
+```
+
+Create a production build with `npm run build`. GitHub Actions publishes the generated `dist/` directory to GitHub Pages.

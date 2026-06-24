@@ -68,7 +68,7 @@ If a clip cannot play, the app falls back to browser text-to-speech.
 
 ## GitHub Pages
 
-Upload the project contents to the root of your GitHub Pages repository.
+The root Vite project copies these static assets into `dist/` during `npm run build`. GitHub Actions publishes that generated directory to GitHub Pages.
 
 
 ## Cache behavior in v4.2
