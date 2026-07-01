@@ -3,13 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#162222" />
+  <meta name="theme-color" content="#f7f4ef" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <link rel="manifest" href="manifest.json" />
   <title>Breathwork</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <script type="importmap">
     {
       "imports": {
@@ -17,41 +16,33 @@
         "react-dom": "https://esm.sh/react-dom@18.3.1?dev",
         "react-dom/client": "https://esm.sh/react-dom@18.3.1/client?dev",
         "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime?dev",
-        "react/jsx-dev-runtime": "https://esm.sh/react@18.3.1/jsx-dev-runtime?dev"
+        "lucide-react": "https://esm.sh/lucide-react@0.468.0?external=react&deps=react@18.3.1"
       }
     }
   </script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            pine: {
-              950: "#101a1a",
-              900: "#162222",
-              800: "#1f2f2f",
-              700: "#2a3c3b",
-              600: "#35504d",
-              500: "#4b6f69",
-              300: "#9fd1c4",
-              100: "#e8f4f1"
-            },
-            ember: "#e68a73"
-          },
-          boxShadow: {
-            breath: "0 24px 70px rgba(0,0,0,.38)"
-          }
-        }
-      }
-    };
-  </script>
   <style>
+    :root {
+      color-scheme: light;
+      --app-bg: #f7f4ef;
+      --app-panel: #fffdfa;
+      --app-panel-muted: #eee8df;
+      --app-fg: #1f2320;
+      --app-muted: #626a64;
+      --app-border: #d8d0c4;
+      --app-accent: #2f756c;
+      --app-accent-strong: #225b54;
+      --app-danger: #b3261e;
+      --app-danger-bg: #fff0ee;
+      --app-focus: #287d73;
+      --app-shadow: 0 18px 50px rgba(47, 39, 30, 0.12);
+    }
+
     html,
     body {
       margin: 0;
       min-height: 100%;
-      background: #162222;
-      color: #e8f4f1;
+      background: var(--app-bg);
+      color: var(--app-fg);
       overscroll-behavior: none;
     }
 
@@ -70,18 +61,25 @@
       font: inherit;
     }
 
-    .screen-safe {
-      padding-left: max(1rem, env(safe-area-inset-left));
-      padding-right: max(1rem, env(safe-area-inset-right));
-    }
-
-    .bottom-safe {
-      padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+    .app-safe {
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
     }
 
     .focus-ring:focus-visible {
-      outline: 3px solid #9fd1c4;
+      outline: 3px solid var(--app-focus);
       outline-offset: 3px;
+    }
+
+    .breath-orb {
+      transform: scale(var(--breath-scale));
+      transition: transform 900ms ease-in-out, opacity 900ms ease-in-out;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .breath-orb {
+        transition: none;
+      }
     }
   </style>
 </head>
@@ -92,17 +90,94 @@
     import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
     import { createRoot } from "react-dom/client";
     import {
-      ChakraProvider,
       Box,
       Button,
+      ChakraProvider,
       Flex,
       Grid,
-      GridItem,
       HStack,
+      IconButton,
+      Stack,
       Text,
       VStack,
-      extendTheme
-    } from "https://esm.sh/@chakra-ui/react@2.10.9?external=react,react-dom&deps=react@18.3.1,react-dom@18.3.1";
+      createSystem,
+      defaultConfig,
+      defineConfig
+    } from "https://esm.sh/@chakra-ui/react@3.22.0?external=react,react-dom&deps=react@18.3.1,react-dom@18.3.1";
+    import {
+      Check,
+      ChevronDown,
+      ChevronUp,
+      Menu,
+      Minus,
+      Plus,
+      Volume2,
+      VolumeX,
+      Waves,
+      X,
+      Zap,
+      ZapOff
+    } from "lucide-react";
+
+    const system = createSystem(defaultConfig, defineConfig({
+      theme: {
+        tokens: {
+          colors: {
+            cream: { value: "#f7f4ef" },
+            surface: { value: "#fffdfa" },
+            surfaceMuted: { value: "#eee8df" },
+            ink: { value: "#1f2320" },
+            mutedInk: { value: "#626a64" },
+            line: { value: "#d8d0c4" },
+            breath: { value: "#2f756c" },
+            breathStrong: { value: "#225b54" },
+            danger: { value: "#b3261e" },
+            dangerBg: { value: "#fff0ee" }
+          }
+        },
+        semanticTokens: {
+          colors: {
+            bg: { value: "{colors.cream}" },
+            "bg.panel": { value: "{colors.surface}" },
+            "bg.muted": { value: "{colors.surfaceMuted}" },
+            fg: { value: "{colors.ink}" },
+            "fg.muted": { value: "{colors.mutedInk}" },
+            border: { value: "{colors.line}" },
+            accent: { value: "{colors.breath}" },
+            "accent.strong": { value: "{colors.breathStrong}" },
+            "fg.error": { value: "{colors.danger}" },
+            "bg.error": { value: "{colors.dangerBg}" }
+          }
+        },
+        textStyles: {
+          title: {
+            value: {
+              fontSize: "20px",
+              fontWeight: "800",
+              lineHeight: "1.2",
+              letterSpacing: "0"
+            }
+          },
+          label: {
+            value: {
+              fontSize: "13px",
+              fontWeight: "700",
+              lineHeight: "1.2",
+              letterSpacing: "0"
+            }
+          }
+        },
+        recipes: {
+          button: {
+            base: {
+              borderRadius: "999px",
+              fontWeight: "800",
+              minH: "44px"
+            }
+          }
+        }
+      }
+    }));
 
     const STORAGE_KEYS = {
       voice: "breathwork.voice",
@@ -111,51 +186,25 @@
     };
 
     const PHASES = [
-      { key: "inhale", label: "Inhale", required: true },
-      { key: "hold", label: "Hold", required: false },
-      { key: "exhale", label: "Exhale", required: true },
-      { key: "hold", label: "Hold", required: false }
+      { key: "inhale", label: "Inhale", short: "In" },
+      { key: "hold", label: "Hold", short: "Hold" },
+      { key: "exhale", label: "Exhale", short: "Out" },
+      { key: "hold", label: "Hold", short: "Hold" }
     ];
 
-    const NUMBER_CLIPS = [
-      "zero",
-      "one",
-      "two",
-      "three",
-      "four",
-      "five",
-      "six",
-      "seven",
-      "eight",
-      "nine",
-      "ten",
-      "eleven",
-      "twelve",
-      "thirteen",
-      "fourteen",
-      "fifteen",
-      "sixteen",
-      "seventeen",
-      "eighteen",
-      "nineteen",
-      "twenty",
-      "twenty-one",
-      "twenty-two",
-      "twenty-three",
-      "twenty-four",
-      "twenty-five",
-      "twenty-six",
-      "twenty-seven",
-      "twenty-eight",
-      "twenty-nine",
-      "thirty"
+    const NUMBER_WORDS = [
+      "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+      "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
+      "seventeen", "eighteen", "nineteen", "twenty", "twenty-one", "twenty-two",
+      "twenty-three", "twenty-four", "twenty-five", "twenty-six", "twenty-seven",
+      "twenty-eight", "twenty-nine", "thirty"
     ];
 
     const CLIPS = {
       inhale: "inhale.mp3",
       hold: "hold.mp3",
       exhale: "exhale.mp3",
-      ...Object.fromEntries(NUMBER_CLIPS.slice(1).map((name, index) => [String(index + 1), `${name}.mp3`]))
+      ...Object.fromEntries(NUMBER_WORDS.slice(1).map((name, index) => [String(index + 1), `${name}.mp3`]))
     };
 
     const PRESETS = [
@@ -212,38 +261,6 @@
       }
     };
 
-    const chakraTheme = extendTheme({
-      styles: {
-        global: {
-          body: {
-            bg: "transparent",
-            color: "pine.100"
-          }
-        }
-      },
-      colors: {
-        pine: {
-          950: "#101a1a",
-          900: "#162222",
-          800: "#1f2f2f",
-          700: "#2a3c3b",
-          600: "#35504d",
-          500: "#4b6f69",
-          300: "#9fd1c4",
-          100: "#e8f4f1"
-        }
-      },
-      components: {
-        Button: {
-          baseStyle: {
-            borderRadius: "999px",
-            fontWeight: 700,
-            minH: "44px"
-          }
-        }
-      }
-    });
-
     const clampTiming = value => {
       const number = Number.parseInt(String(value), 10);
       if (!Number.isFinite(number)) return 0;
@@ -274,16 +291,16 @@
       };
     };
 
-    const formatDuration = seconds => {
-      const minutes = Math.floor(seconds / 60);
-      const remainder = seconds % 60;
-      return `${String(minutes).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`;
-    };
-
     const cueForDisplayedSecond = (times, phaseIndex, remaining) => {
       if (remaining < 1) return null;
       if (remaining === times[phaseIndex]) return PHASES[phaseIndex].key;
       return String(remaining);
+    };
+
+    const formatDuration = seconds => {
+      const minutes = Math.floor(seconds / 60);
+      const remainder = seconds % 60;
+      return `${String(minutes).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`;
     };
 
     function App() {
@@ -300,11 +317,12 @@
       const [remaining, setRemaining] = useState(PRESETS[0].times[firstPlayablePhase(PRESETS[0].times)]);
       const [duration, setDuration] = useState(0);
       const [completedBreaths, setCompletedBreaths] = useState(0);
+
       const audioRef = useRef({});
       const lastCueRef = useRef("");
       const phaseIndexRef = useRef(firstPlayablePhase(PRESETS[0].times));
-      const sessionIdRef = useRef(0);
       const tickRef = useRef(null);
+      const sessionIdRef = useRef(0);
 
       const selectedPatternText = useMemo(() => patternText(pattern.times), [pattern]);
 
@@ -317,8 +335,7 @@
 
       const playCue = useCallback(cue => {
         if (muted) return false;
-        const key = String(cue).toLowerCase();
-        const audio = audioRef.current[key];
+        const audio = audioRef.current[String(cue).toLowerCase()];
         if (!audio) return false;
 
         try {
@@ -333,6 +350,8 @@
 
       const resetSession = useCallback((nextPattern = pattern) => {
         const startPhase = firstPlayablePhase(nextPattern.times);
+        window.clearInterval(tickRef.current);
+        tickRef.current = null;
         sessionIdRef.current += 1;
         lastCueRef.current = "";
         Object.values(audioRef.current).forEach(audio => {
@@ -359,7 +378,6 @@
         const startPhase = firstPlayablePhase(pattern.times);
         const startRemaining = pattern.times[startPhase];
         const nextSessionId = sessionIdRef.current + 1;
-        const firstCue = cueForDisplayedSecond(pattern.times, startPhase, startRemaining);
         setActivePanel(null);
         setCustomOpen(false);
         setDuration(0);
@@ -370,11 +388,11 @@
         setRunning(true);
         sessionIdRef.current = nextSessionId;
         lastCueRef.current = "";
+
+        const firstCue = cueForDisplayedSecond(pattern.times, startPhase, startRemaining);
         if (firstCue) {
           const cueKey = `${nextSessionId}:${startPhase}:${startRemaining}:${firstCue}`;
-          if (playCue(firstCue)) {
-            lastCueRef.current = cueKey;
-          }
+          if (playCue(firstCue)) lastCueRef.current = cueKey;
         }
         vibrate(160);
       };
@@ -389,6 +407,12 @@
         if (index === 2) setCustomErrors(current => ({ ...current, exhale: false }));
       };
 
+      const stepCustomTime = (index, delta) => {
+        setCustomTimes(current => current.map((seconds, currentIndex) => currentIndex === index ? clampTiming(seconds + delta) : seconds));
+        if (index === 0) setCustomErrors(current => ({ ...current, inhale: false }));
+        if (index === 2) setCustomErrors(current => ({ ...current, exhale: false }));
+      };
+
       const applyCustomPattern = () => {
         const nextTimes = customTimes.map(clampTiming);
         const nextErrors = {
@@ -396,7 +420,6 @@
           exhale: nextTimes[2] < 1
         };
         setCustomErrors(nextErrors);
-
         if (nextErrors.inhale || nextErrors.exhale) return;
 
         applyPattern({
@@ -465,26 +488,32 @@
       }, [pattern.times, running]);
 
       useEffect(() => {
-        if (!running) return;
+        if (!running || remaining < 1) return;
 
-        if (remaining > 0) {
-          const cue = cueForDisplayedSecond(pattern.times, phaseIndex, remaining);
-          const cueKey = `${sessionIdRef.current}:${phaseIndex}:${remaining}:${cue}`;
-          if (cue && lastCueRef.current !== cueKey) {
-            if (playCue(cue)) {
-              lastCueRef.current = cueKey;
-            }
-            vibrate(remaining === pattern.times[phaseIndex] ? 180 : 45);
-          }
-          return;
+        const cue = cueForDisplayedSecond(pattern.times, phaseIndex, remaining);
+        const cueKey = `${sessionIdRef.current}:${phaseIndex}:${remaining}:${cue}`;
+        if (cue && lastCueRef.current !== cueKey) {
+          if (playCue(cue)) lastCueRef.current = cueKey;
+          vibrate(remaining === pattern.times[phaseIndex] ? 180 : 45);
         }
       }, [phaseIndex, pattern.times, playCue, remaining, running, vibrate]);
 
       return React.createElement(Box, {
-        className: running ? "h-[100dvh] overflow-hidden bg-pine-900 text-pine-100" : "min-h-[100dvh] bg-pine-900 text-pine-100"
+        bg: "bg",
+        color: "fg",
+        minH: "100dvh",
+        overflow: running ? "hidden" : "auto"
       },
         React.createElement(Box, {
-          className: running ? "mx-auto flex h-full max-w-4xl flex-col screen-safe py-3" : "mx-auto flex min-h-[100dvh] max-w-4xl flex-col screen-safe py-3"
+          className: "app-safe",
+          display: "flex",
+          flexDirection: "column",
+          h: running ? "100dvh" : "auto",
+          maxW: "900px",
+          minH: "100dvh",
+          mx: "auto",
+          pb: running ? "0" : "8",
+          pt: "max(12px, env(safe-area-inset-top))"
         },
           React.createElement(Header, {
             hapticsEnabled,
@@ -494,7 +523,6 @@
             onToggleMute: () => setMuted(current => !current),
             running
           }),
-
           React.createElement(BreathingCoach, {
             completedBreaths,
             duration,
@@ -502,35 +530,41 @@
             onStop: stopSession,
             pattern,
             patternText: selectedPatternText,
-            phaseLabel: PHASES[phaseIndex].label,
+            phaseIndex,
             remaining,
             running
           }),
-
-          !running && React.createElement(VStack, { align: "stretch", spacing: 3, mt: 4, pb: 6 },
+          !running && React.createElement(Stack, {
+            align: "stretch",
+            gap: "3",
+            mt: "4",
+            pb: "max(24px, env(safe-area-inset-bottom))"
+          },
             React.createElement(Button, {
               className: "focus-ring",
-              colorScheme: "teal",
+              bg: "accent",
+              color: "white",
               h: "52px",
-              onClick: () => setActivePanel("patterns")
+              onClick: () => setActivePanel("patterns"),
+              _hover: { bg: "accent.strong" }
             }, "Breathing pattern library"),
             React.createElement(CustomPattern, {
               customErrors,
               customOpen,
               customTimes,
               onApply: applyCustomPattern,
+              onStep: stepCustomTime,
               onToggle: () => setCustomOpen(current => !current),
               onUpdate: updateCustomTime
             })
           )
         ),
-
         React.createElement(FullscreenPanel, {
           isOpen: activePanel === "menu",
           onClose: closePanels,
           title: "Menu"
         },
-          React.createElement(VStack, { align: "stretch", spacing: 4 },
+          React.createElement(Stack, { gap: "3" },
             React.createElement(MenuCard, {
               description: "Choose a predefined breathing pattern according to how you want to feel.",
               onClick: () => setActivePanel("patterns"),
@@ -543,13 +577,12 @@
             })
           )
         ),
-
         React.createElement(FullscreenPanel, {
           isOpen: activePanel === "patterns",
           onClose: closePanels,
           title: "Breathing patterns"
         },
-          React.createElement(VStack, { align: "stretch", spacing: 3 },
+          React.createElement(Stack, { gap: "3" },
             PRESETS.map(preset => React.createElement(ChoiceCard, {
               key: preset.name,
               description: preset.description,
@@ -560,13 +593,12 @@
             }))
           )
         ),
-
         React.createElement(FullscreenPanel, {
           isOpen: activePanel === "voices",
           onClose: closePanels,
           title: "Choose a voice"
         },
-          React.createElement(VStack, { align: "stretch", spacing: 3 },
+          React.createElement(Stack, { gap: "3" },
             Object.entries(VOICES).map(([key, voice]) => React.createElement(ChoiceCard, {
               key,
               description: `Feel: ${voice.feel}`,
@@ -586,183 +618,319 @@
     function Header({ hapticsEnabled, muted, onMenu, onToggleHaptics, onToggleMute, running }) {
       return React.createElement(Flex, {
         align: "center",
-        className: running ? "shrink-0 pb-3" : "sticky top-0 z-20 bg-pine-900/95 pb-3 pt-1 backdrop-blur",
-        justify: "space-between"
+        as: "header",
+        flex: "0 0 auto",
+        justify: "space-between",
+        pb: "3",
+        pt: "1",
+        zIndex: "10"
       },
-        React.createElement(Button, {
+        React.createElement(IconButton, {
           "aria-label": "Open menu",
           className: "focus-ring",
-          minW: "44px",
           onClick: onMenu,
-          variant: "solid"
-        }, "☰"),
+          variant: "ghost"
+        }, React.createElement(Menu, { size: 24, strokeWidth: 2.2 })),
         React.createElement(Text, {
-          className: "select-none",
-          fontSize: "lg",
-          fontWeight: 800,
-          letterSpacing: "0.03em"
+          fontSize: running ? "16px" : "20px",
+          fontWeight: "800",
+          lineHeight: "1.1"
         }, "Breathwork"),
-        React.createElement(HStack, { spacing: 2 },
-          React.createElement(Button, {
+        React.createElement(HStack, { gap: "1" },
+          React.createElement(IconButton, {
             "aria-label": muted ? "Unmute voice guidance" : "Mute voice guidance",
             className: "focus-ring",
-            minW: "44px",
-            onClick: onToggleMute
-          }, muted ? "🔇" : "🔊"),
-          React.createElement(Button, {
+            onClick: onToggleMute,
+            variant: "ghost"
+          }, muted ? React.createElement(VolumeX, { size: 22 }) : React.createElement(Volume2, { size: 22 })),
+          React.createElement(IconButton, {
             "aria-label": hapticsEnabled ? "Disable haptic feedback" : "Enable haptic feedback",
             className: "focus-ring",
-            minW: "44px",
-            onClick: onToggleHaptics
-          }, hapticsEnabled ? "📳" : "📴")
+            onClick: onToggleHaptics,
+            variant: "ghost"
+          }, hapticsEnabled ? React.createElement(Zap, { size: 21 }) : React.createElement(ZapOff, { size: 21 }))
         )
       );
     }
 
-    function BreathingCoach({ completedBreaths, duration, onStart, onStop, pattern, patternText, phaseLabel, remaining, running }) {
+    function BreathingCoach({ completedBreaths, duration, onStart, onStop, pattern, patternText, phaseIndex, remaining, running }) {
       if (running) {
-        return React.createElement(Box, {
-          "aria-live": "polite",
-          className: "grid min-h-0 flex-1 rounded-[2rem] bg-pine-800 shadow-breath",
-          style: { gridTemplateRows: "72px minmax(0, 1fr) 112px" }
+        const phase = PHASES[phaseIndex];
+        const phaseDuration = pattern.times[phaseIndex] || 1;
+        const progress = 1 - ((remaining - 1) / Math.max(1, phaseDuration));
+        const scale = phase.key === "inhale"
+          ? 0.78 + progress * 0.22
+          : phase.key === "exhale"
+            ? 1 - progress * 0.22
+            : 1;
+
+        return React.createElement(Grid, {
+          flex: "1 1 auto",
+          gridTemplateRows: "72px minmax(0, 1fr) 96px",
+          minH: "0",
+          pb: "max(12px, env(safe-area-inset-bottom))"
         },
           React.createElement(Flex, {
             align: "center",
-            className: "px-4 text-pine-300",
+            borderBottom: "1px solid",
+            borderColor: "border",
             justify: "space-between"
           },
-            React.createElement(Box, { fontVariantNumeric: "tabular-nums" },
-              React.createElement(Text, { fontSize: "sm" }, "Duration"),
-              React.createElement(Text, { color: "pine.100", fontSize: "xl", fontWeight: 800 }, formatDuration(duration))
-            ),
-            React.createElement(Box, { fontVariantNumeric: "tabular-nums", textAlign: "right" },
-              React.createElement(Text, { fontSize: "sm" }, "Breaths"),
-              React.createElement(Text, { color: "pine.100", fontSize: "xl", fontWeight: 800 }, completedBreaths)
+            React.createElement(Stat, { label: "Duration", value: formatDuration(duration) }),
+            React.createElement(Stat, { label: "Breaths", value: completedBreaths })
+          ),
+          React.createElement(Flex, {
+            align: "center",
+            direction: "column",
+            justify: "center",
+            minH: "0",
+            py: "6",
+            textAlign: "center"
+          },
+            React.createElement(Box, {
+              className: "breath-orb",
+              style: { "--breath-scale": String(scale) },
+              alignItems: "center",
+              bg: "bg.panel",
+              border: "1px solid",
+              borderColor: "border",
+              borderRadius: "999px",
+              boxShadow: "var(--app-shadow)",
+              display: "flex",
+              flexDirection: "column",
+              h: { base: "min(62vw, 310px)", md: "340px" },
+              justifyContent: "center",
+              maxH: "48dvh",
+              minH: "220px",
+              minW: "220px",
+              px: "8",
+              w: { base: "min(62vw, 310px)", md: "340px" }
+            },
+              React.createElement(Text, {
+                color: "accent",
+                fontSize: "clamp(26px, 8vw, 52px)",
+                fontWeight: "900",
+                lineHeight: "1"
+              }, phase.label),
+              React.createElement(Text, {
+                fontSize: "clamp(88px, 27vw, 176px)",
+                fontWeight: "900",
+                lineHeight: "0.9",
+                mt: "3"
+              }, remaining),
+              React.createElement(Text, {
+                color: "fg.muted",
+                fontSize: "18px",
+                fontWeight: "800",
+                mt: "4"
+              }, patternText)
             )
           ),
-          React.createElement(VStack, {
-            align: "center",
-            className: "min-h-0 justify-center px-4 pb-4 text-center",
-            spacing: 2
-          },
-            React.createElement(Text, {
-              color: "pine.300",
-              fontSize: ["xl", "2xl"],
-              fontWeight: 800,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase"
-            }, phaseLabel),
-            React.createElement(Text, {
-              className: "text-[clamp(6rem,31vw,13rem)]",
-              fontWeight: 900,
-              lineHeight: 0.85,
-              fontVariantNumeric: "tabular-nums"
-            }, remaining),
-            React.createElement(Text, { color: "pine.300", fontSize: ["lg", "xl"] }, patternText)
-          ),
-          React.createElement(Box, {
-            className: "flex min-h-24 items-end px-4 bottom-safe"
+          React.createElement(Flex, {
+            align: "end",
+            justify: "center"
           },
             React.createElement(Button, {
               className: "focus-ring",
-              colorScheme: "red",
+              bg: "bg.error",
+              border: "1px solid",
+              borderColor: "fg.error",
+              color: "fg.error",
               h: "56px",
+              maxW: "420px",
               onClick: onStop,
-              w: "full"
+              w: "100%",
+              _hover: { bg: "bg.error" }
             }, "Stop")
           )
         );
       }
 
-      return React.createElement(Box, {
-        className: "flex min-h-[42vh] flex-1 flex-col items-center justify-center rounded-[2rem] bg-pine-800 p-6 text-center shadow-breath"
+      return React.createElement(Flex, {
+        align: "center",
+        bg: "bg.panel",
+        border: "1px solid",
+        borderColor: "border",
+        borderRadius: "28px",
+        boxShadow: "var(--app-shadow)",
+        direction: "column",
+        justify: "center",
+        minH: { base: "430px", md: "520px" },
+        px: { base: "6", md: "10" },
+        py: "10",
+        textAlign: "center"
       },
-        React.createElement(VStack, { spacing: 4 },
-          React.createElement(Box, null,
-            React.createElement(Text, { fontSize: ["3xl", "4xl"], fontWeight: 900 }, pattern.name),
-            React.createElement(Text, { color: "pine.300", fontSize: ["xl", "2xl"], fontWeight: 700, mt: 1 }, patternText)
+        React.createElement(Box, {
+          alignItems: "center",
+          bg: "bg.muted",
+          borderRadius: "999px",
+          display: "flex",
+          h: "72px",
+          justifyContent: "center",
+          mb: "8",
+          w: "72px"
+        }, React.createElement(Waves, { size: 34, color: "var(--app-accent)" })),
+        React.createElement(Text, {
+          fontSize: "clamp(34px, 10vw, 64px)",
+          fontWeight: "900",
+          lineHeight: "1"
+        }, pattern.name),
+        React.createElement(Text, {
+          color: "accent",
+          fontSize: "clamp(28px, 8vw, 48px)",
+          fontWeight: "900",
+          lineHeight: "1",
+          mt: "4"
+        }, patternText),
+        React.createElement(Text, {
+          color: "fg.muted",
+          fontSize: "16px",
+          lineHeight: "1.55",
+          maxW: "520px",
+          mt: "5"
+        }, pattern.description),
+        React.createElement(Button, {
+          className: "focus-ring",
+          bg: "accent",
+          color: "white",
+          h: "56px",
+          mt: "9",
+          onClick: onStart,
+          px: "12",
+          _hover: { bg: "accent.strong" }
+        }, "Start")
+      );
+    }
+
+    function Stat({ label, value }) {
+      return React.createElement(Box, null,
+        React.createElement(Text, {
+          color: "fg.muted",
+          fontSize: "12px",
+          fontWeight: "800",
+          lineHeight: "1.1"
+        }, label),
+        React.createElement(Text, {
+          fontSize: "20px",
+          fontWeight: "900",
+          lineHeight: "1.2",
+          mt: "1"
+        }, value)
+      );
+    }
+
+    function CustomPattern({ customErrors, customOpen, customTimes, onApply, onStep, onToggle, onUpdate }) {
+      return React.createElement(Box, {
+        bg: "bg.panel",
+        border: "1px solid",
+        borderColor: "border",
+        borderRadius: "24px",
+        overflow: "hidden"
+      },
+        React.createElement(Button, {
+          className: "focus-ring",
+          bg: "transparent",
+          borderRadius: "0",
+          color: "fg",
+          h: "56px",
+          justifyContent: "space-between",
+          onClick: onToggle,
+          px: "5",
+          w: "100%",
+          _hover: { bg: "bg.muted" }
+        },
+          React.createElement(Text, { as: "span" }, "Custom breathing pattern"),
+          customOpen ? React.createElement(ChevronUp, { size: 20 }) : React.createElement(ChevronDown, { size: 20 })
+        ),
+        customOpen && React.createElement(Stack, { gap: "5", p: "5", pt: "2" },
+          React.createElement(Text, {
+            fontSize: "20px",
+            fontWeight: "900"
+          }, "Your breathing pattern"),
+          React.createElement(Grid, {
+            gap: "3",
+            templateColumns: "repeat(2, minmax(0, 1fr))"
+          },
+            PHASES.map((phase, index) => React.createElement(TimeField, {
+              key: `${phase.key}-${index}`,
+              error: (index === 0 && customErrors.inhale) || (index === 2 && customErrors.exhale),
+              label: index === 1 ? "Hold after inhale" : index === 3 ? "Hold after exhale" : phase.label,
+              minRequired: index === 0 || index === 2,
+              onChange: value => onUpdate(index, value),
+              onStep: delta => onStep(index, delta),
+              value: customTimes[index]
+            }))
           ),
           React.createElement(Button, {
             className: "focus-ring",
-            colorScheme: "teal",
-            h: "56px",
-            onClick: onStart,
-            px: 10
-          }, "Start")
+            bg: "accent",
+            color: "white",
+            h: "52px",
+            onClick: onApply,
+            w: "100%",
+            _hover: { bg: "accent.strong" }
+          }, "Use this custom pattern")
         )
       );
     }
 
-    function CustomPattern({ customErrors, customOpen, customTimes, onApply, onToggle, onUpdate }) {
-      const fields = [
-        { index: 0, label: "Inhale", error: customErrors.inhale },
-        { index: 1, label: "Hold after inhale", error: false },
-        { index: 2, label: "Exhale", error: customErrors.exhale },
-        { index: 3, label: "Hold after exhale", error: false }
-      ];
-
-      return React.createElement(Box, {
-        className: "rounded-3xl bg-pine-800 p-3"
-      },
-        React.createElement(Button, {
-          "aria-expanded": customOpen,
-          className: "focus-ring",
-          h: "52px",
-          onClick: onToggle,
-          w: "full"
-        }, "Custom breathing pattern"),
-        customOpen && React.createElement(VStack, {
-          align: "stretch",
-          className: "pt-4",
-          spacing: 4
+    function TimeField({ error, label, minRequired, onChange, onStep, value }) {
+      return React.createElement(Box, null,
+        React.createElement(Text, {
+          color: error ? "fg.error" : "fg.muted",
+          fontSize: "12px",
+          fontWeight: "800",
+          lineHeight: "1.2",
+          mb: "2"
+        }, label),
+        React.createElement(Flex, {
+          align: "center",
+          bg: "bg",
+          border: "1px solid",
+          borderColor: error ? "fg.error" : "border",
+          borderRadius: "16px",
+          overflow: "hidden"
         },
-          React.createElement(Text, { fontSize: "lg", fontWeight: 800 }, "Your breathing pattern"),
-          React.createElement(Grid, { templateColumns: "repeat(2, minmax(0, 1fr))", gap: 3 },
-            fields.map(field => React.createElement(GridItem, { key: field.index },
-              React.createElement(Text, { color: "pine.300", fontSize: "sm", mb: 1 }, field.label),
-              React.createElement(HStack, { spacing: 1 },
-                React.createElement(Button, {
-                  "aria-label": `Subtract one second from ${field.label}`,
-                  className: "focus-ring",
-                  minW: "40px",
-                  onClick: () => onUpdate(field.index, customTimes[field.index] - 1),
-                  px: 0
-                }, "−"),
-                React.createElement(Box, {
-                  "aria-invalid": field.error,
-                  "aria-label": `${field.label} seconds`,
-                  as: "input",
-                  className: `min-w-0 rounded-xl border bg-pine-950 px-2 py-3 text-center text-pine-100 focus-ring ${field.error ? "border-red-400" : "border-pine-500"}`,
-                  inputMode: "numeric",
-                  min: 0,
-                  onChange: event => onUpdate(field.index, event.target.value),
-                  pattern: "[0-9]*",
-                  step: 1,
-                  type: "number",
-                  value: customTimes[field.index],
-                  w: "full"
-                }),
-                React.createElement(Button, {
-                  "aria-label": `Add one second to ${field.label}`,
-                  className: "focus-ring",
-                  minW: "40px",
-                  onClick: () => onUpdate(field.index, customTimes[field.index] + 1),
-                  px: 0
-                }, "+")
-              )
-            ))
-          ),
-          (customErrors.inhale || customErrors.exhale) && React.createElement(Text, {
-            color: "red.200",
-            fontSize: "sm"
-          }, "Inhale and exhale must be at least 1 second."),
-          React.createElement(Button, {
+          React.createElement(Box, {
+            as: "input",
+            "aria-invalid": error ? "true" : "false",
+            "aria-label": `${label} seconds`,
+            bg: "transparent",
+            border: "0",
             className: "focus-ring",
-            colorScheme: "teal",
-            h: "52px",
-            onClick: onApply,
-            w: "full"
-          }, "Use this custom pattern")
+            color: "fg",
+            inputMode: "numeric",
+            min: minRequired ? "1" : "0",
+            max: "30",
+            onChange: event => onChange(event.target.value),
+            outline: "0",
+            px: "3",
+            py: "3",
+            textAlign: "center",
+            type: "number",
+            value,
+            w: "100%"
+          }),
+          React.createElement(VStack, { gap: "0", p: "1" },
+            React.createElement(IconButton, {
+              "aria-label": `Add one second to ${label}`,
+              className: "focus-ring",
+              h: "28px",
+              minW: "28px",
+              onClick: () => onStep(1),
+              size: "xs",
+              variant: "ghost"
+            }, React.createElement(Plus, { size: 15 })),
+            React.createElement(IconButton, {
+              "aria-label": `Subtract one second from ${label}`,
+              className: "focus-ring",
+              h: "28px",
+              minW: "28px",
+              onClick: () => onStep(-1),
+              size: "xs",
+              variant: "ghost"
+            }, React.createElement(Minus, { size: 15 }))
+          )
         )
       );
     }
@@ -772,77 +940,139 @@
 
       return React.createElement(Box, {
         "aria-modal": "true",
-        className: "fixed inset-0 z-50 overflow-y-auto bg-pine-800 text-pine-100",
-        role: "dialog"
+        bg: "bg",
+        className: "app-safe",
+        color: "fg",
+        inset: "0",
+        overflowY: "auto",
+        position: "fixed",
+        role: "dialog",
+        zIndex: "100",
+        pb: "max(28px, env(safe-area-inset-bottom))",
+        pt: "max(14px, env(safe-area-inset-top))"
       },
-        React.createElement(Box, { className: "mx-auto min-h-[100dvh] max-w-3xl screen-safe py-4" },
-          React.createElement(Flex, {
-            align: "center",
-            className: "sticky top-0 z-10 bg-pine-800/95 pb-4 backdrop-blur",
-            justify: "space-between"
-          },
-            React.createElement(Box, { w: "44px" }),
-            React.createElement(Text, { fontSize: "2xl", fontWeight: 900 }, title),
-            React.createElement(Button, {
-              "aria-label": `Close ${title}`,
-              className: "focus-ring",
-              minW: "44px",
-              onClick: onClose,
-              px: 0
-            }, "×")
-          ),
-          children
-        )
+        React.createElement(Flex, {
+          align: "center",
+          justify: "center",
+          maxW: "760px",
+          mx: "auto",
+          position: "relative",
+          py: "2"
+        },
+          React.createElement(Text, {
+            fontSize: "22px",
+            fontWeight: "900",
+            textAlign: "center"
+          }, title),
+          React.createElement(IconButton, {
+            "aria-label": `Close ${title}`,
+            className: "focus-ring",
+            onClick: onClose,
+            position: "absolute",
+            right: "0",
+            top: "0",
+            variant: "ghost"
+          }, React.createElement(X, { size: 24 }))
+        ),
+        React.createElement(Box, {
+          maxW: "760px",
+          mx: "auto",
+          pt: "7"
+        }, children)
       );
     }
 
     function MenuCard({ description, onClick, title }) {
       return React.createElement(Button, {
         className: "focus-ring",
+        bg: "bg.panel",
+        border: "1px solid",
+        borderColor: "border",
+        borderRadius: "20px",
+        color: "fg",
         h: "auto",
         justifyContent: "flex-start",
         onClick,
-        p: 5,
+        p: "5",
         textAlign: "left",
         whiteSpace: "normal",
-        w: "full"
+        _hover: { bg: "bg.muted" }
       },
         React.createElement(Box, null,
-          React.createElement(Text, { fontWeight: 900 }, title),
-          React.createElement(Text, { fontSize: "sm", fontWeight: 500, mt: 1 }, description)
+          React.createElement(Text, {
+            fontSize: "18px",
+            fontWeight: "900",
+            lineHeight: "1.2"
+          }, title),
+          React.createElement(Text, {
+            color: "fg.muted",
+            fontSize: "14px",
+            fontWeight: "500",
+            lineHeight: "1.45",
+            mt: "2"
+          }, description)
         )
       );
     }
 
     function ChoiceCard({ description, meta, onClick, selected, title }) {
       return React.createElement(Button, {
-        "aria-pressed": selected,
-        className: `focus-ring ${selected ? "ring-2 ring-pine-300" : ""}`,
-        colorScheme: selected ? "teal" : "gray",
+        className: "focus-ring",
+        bg: selected ? "bg.muted" : "bg.panel",
+        border: "1px solid",
+        borderColor: selected ? "accent" : "border",
+        borderRadius: "20px",
+        color: "fg",
         h: "auto",
-        justifyContent: "flex-start",
+        justifyContent: "space-between",
         onClick,
-        p: 5,
+        p: "5",
         textAlign: "left",
-        variant: selected ? "solid" : "outline",
         whiteSpace: "normal",
-        w: "full"
+        _hover: { bg: "bg.muted" }
       },
-        React.createElement(Box, null,
-          React.createElement(Text, { fontWeight: 900 }, selected ? `✓ ${title}` : title),
-          React.createElement(Text, { fontSize: "sm", fontWeight: 600, mt: 1 }, description),
-          React.createElement(Text, { fontSize: "sm", fontWeight: 800, mt: 2 }, meta)
-        )
+        React.createElement(Box, { pr: "4" },
+          React.createElement(Text, {
+            fontSize: "18px",
+            fontWeight: "900",
+            lineHeight: "1.2"
+          }, title),
+          React.createElement(Text, {
+            color: "fg.muted",
+            fontSize: "14px",
+            fontWeight: "500",
+            lineHeight: "1.45",
+            mt: "2"
+          }, description),
+          React.createElement(Text, {
+            color: "accent",
+            fontSize: "13px",
+            fontWeight: "900",
+            lineHeight: "1.3",
+            mt: "3"
+          }, meta)
+        ),
+        selected && React.createElement(Box, {
+          alignItems: "center",
+          bg: "accent",
+          borderRadius: "999px",
+          color: "white",
+          display: "flex",
+          flex: "0 0 auto",
+          h: "28px",
+          justifyContent: "center",
+          w: "28px"
+        }, React.createElement(Check, { size: 17 }))
       );
     }
 
     createRoot(document.getElementById("root")).render(
-      React.createElement(ChakraProvider, { theme: chakraTheme }, React.createElement(App))
+      React.createElement(ChakraProvider, { value: system }, React.createElement(App))
     );
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register(`./service-worker.js?v=${Date.now()}`).catch(() => {});
+        navigator.serviceWorker.register("./service-worker.js").catch(() => {});
       });
     }
   </script>
