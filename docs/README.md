@@ -1,6 +1,6 @@
 # Documentation — Breathwork
 
-This folder contains design, feature, and roadmap documentation for the breathwork app.
+This folder contains design, feature, framework, and roadmap documentation for the breathwork app.
 
 Purpose
 
@@ -17,7 +17,8 @@ How to read these docs
 
 - Start with `context.md` for high-level goals and constraints.
 - Read `vision.md` to understand design principles and product intent.
-- Use `design.md` for UI/UX component behavior, screen states, and accessibility notes.
+- Use `design.md` as the entry point for UI/UX, visual design, screen states, accessibility, and Chakra UI implementation rules.
+- Use `frameworks/` for framework-authored references and project maps to those references.
 - Open `features/` for concrete feature designs and expected data formats.
 - Check `roadmap.md` for phased milestones and priorities.
 - Consult `decisions.md` for recorded architecture and product tradeoffs.
@@ -26,7 +27,9 @@ Files in this folder
 
 - `context.md` — project context, target users, and technical constraints.
 - `vision.md` — product vision, principles, and high-level goals.
-- `design.md` — UI and UX specifications (Header, Breathing Coach, menus, session states).
+- `design.md` — design documentation entry point.
+- `design/` — product principles, visual language, accessibility, responsive layout, components, screens, and Chakra implementation rules.
+- `frameworks/` — framework references, including the raw Chakra UI v3 guide and project-specific Chakra map.
 - `features/` — feature-level documents (breathing engine, voice system, etc.).
 - `roadmap.md` — phased plan from Core → Immersion → Intelligence.
 - `decisions.md` — architecture and product decisions (intended as the single source of truth).

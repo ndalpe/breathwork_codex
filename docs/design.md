@@ -1,51 +1,32 @@
-# App design ( UI/UX )
+# App Design
 
-## User Interface
+This is the entry point for product design, UI behavior, visual language, and Chakra UI implementation rules.
 
-### General guidelines
+## Start Here
 
-- The user interface must respect the WCAG accessibility standard
-- UI should be as minimal as possible, exposing the features needed according to the users context
-- Play with text size to emphasize information
+- [Design overview](design/README.md) - how the design docs fit together.
+- [Principles](design/principles.md) - durable product and visual design principles.
+- [Accessibility](design/accessibility.md) - WCAG, focus, contrast, motion, and touch rules.
+- [Responsive layout](design/responsive-layout.md) - viewport, safe-area, header, and breathing coach layout rules.
+- [Visual language](design/visual-language.md) - color, typography, spacing, surfaces, icons, and density.
+- [Interaction patterns](design/interaction-patterns.md) - menus, buttons, toggles, expanded panels, and session state behavior.
+- [Motion](design/motion.md) - breathing motion, transitions, reduced motion, haptics, and audio feedback.
+- [Components](design/components.md) - project components mapped to Chakra UI primitives.
+- [Screens](design/screens.md) - screen-level behavior for idle, active session, menu, library, voice, and custom pattern views.
+- [Implementation](design/implementation.md) - Chakra UI usage rules for tokens, recipes, responsive props, color mode, and typegen.
 
-### Header
+## Framework References
 
-- The top of the screen is called the header.
-- On the left of the header is for the location of the burger menu.
-- The right of the header contains the mute button to toggle the voice on or off
-- The right of the header also contains the haptic button to toggle vibration on or off
+- [Framework docs index](frameworks/README.md)
+- [Chakra UI project guide](frameworks/chakraui.md)
+- [Raw Chakra UI v3 reference](frameworks/chakraui-llms-full.txt)
 
-### Breathing Coach
+## Feature Specs
 
-- Below the header is the breathing coach (or BC for short)
-- The currently selected breathing pattren should have a slightly beigger font the the number of seconds.
-- The middle zone block must never overlap with the stop button.
-- Required safe spacing: reserve at least 96px bottom space for the bottom zone (including mobile safe-area inset).
-- On mobile, the stop button must stay within viewport and the countdown digits must remain fully visible above it.
+Feature documents remain the source of truth for feature-specific requirements:
 
-### Breathing pattern library button
-
-- When no breathwork is running, display a button below the BC so the user can access the breathing pattern library.
-- This button should be labeled "Breathing pattern library"
-
-### Custom breathing pattern
-
-- When no breathwork is running, display a button labeled "Custom breathing pattern". Tapping on this button would expand the CBP widget.
-
-### The burger menu
-
-- When tapped, the burger menu should take all the screen space
-- The BM should have a background color
-- The title of the burger menu is "Menu" and is aligned center.
-- The title of the BM should be displayed with a contrasting color and be easy to read
-- The BM contains a link to the breathing pattern library.
-- The BM should also contain a link to the voice library.
-- At the top right of the menu there is a X button, visible at all time, allowing the user to close the burger menu
-- The buttons in the BM have a title in bold caracter followed by a line break and a description
-- The visual design of all buttons in the BM should be identical to keep a visual consistency
-
-## User Experience
-
-- When a breathwork session is starts, the BC should take all the screen real-estate while keeping the header visible.
-- The breathing pattern library is hidden when a breathwork session starts
-- The Custom breathing pattern is hidden when a breathwork session starts
+- [Breathing coach](features/breathing-coach.md)
+- [Breathing pattern library](features/breathing-pattern-library.md)
+- [Custom breathing pattern](features/custom-breathing-pattern.md)
+- [Audio guidance](features/audio-guidance.md)
+- [Voice library](features/voice-library.md)
