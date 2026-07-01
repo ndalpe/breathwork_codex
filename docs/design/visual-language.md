@@ -11,6 +11,12 @@
 - Use semantic tokens for app surfaces, text, borders, and status colors.
 - Prefer `bg`, `fg`, `border`, and related semantic tokens over raw color values in components.
 - Use `colorPalette` for reusable component variants when the same component needs palette variation.
+- The full app experience uses dark mode as the default visual theme, including the installed PWA shell.
+- Blue is the main brand/accent color.
+- Use blue for primary actions, active states, selected states, focus emphasis, and breathing coach highlights.
+- Use neutral dark surfaces for backgrounds and panels.
+- Do not create one-off blue values in components; define blue through Chakra tokens and semantic tokens.
+- Keep contrast WCAG-compliant against dark backgrounds.
 
 ## Spacing
 

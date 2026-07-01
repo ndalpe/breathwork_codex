@@ -27,6 +27,13 @@ Use this file to translate app design decisions into Chakra UI implementation ch
 
 - Use Chakra semantic tokens and color mode utilities instead of hard-coding light and dark values in components.
 - Wrap isolated light or dark sections with Chakra color mode helpers only when the design requires a forced appearance.
+- The app should default to dark mode.
+- Use Chakra color mode support rather than manually hard-coding dark styles in components.
+- If color mode customization is configured, set the default theme to `dark`.
+- Avoid relying on light-mode-only token values.
+- Use Chakra UI's built-in `blue` color palette as the primary app palette.
+- Prefer `colorPalette="blue"` for primary Chakra components.
+- For app-specific styling, expose blue through semantic tokens such as `accent`, `accent.strong`, and `accent.subtle`.
 
 ## Composition
 
@@ -38,3 +45,15 @@ Use this file to translate app design decisions into Chakra UI implementation ch
 
 - Run Chakra typegen after theme, token, recipe, or slot recipe changes.
 - Keep generated type workflow documented in the project setup when Chakra theme customization is added.
+
+## Theme Tokens
+
+- Blue is the primary app color.
+- Define the app's main blue through Chakra tokens.
+- Expose project-level semantic tokens for primary UI roles, such as:
+  - `accent`
+  - `accent.strong`
+  - `accent.subtle`
+  - `focus`
+  - `selection`
+- Components should consume semantic tokens, not raw blue color values.
