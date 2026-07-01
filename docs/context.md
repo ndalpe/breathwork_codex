@@ -4,7 +4,7 @@
 - Offline-first
 - Built with React JS
 - React JS should use development build for easier debugging
-- Built with Tailwind CSS & Chakra UI
+- Built with Chakra UI
 - App is deployed to GitHub Pages from the `app/` folder using GitHub Actions.
 - Only final production-ready files should be copied into app/.
 - Avoid unnecessary dependencies.
@@ -14,6 +14,8 @@
 - Preserve accessibility where possible.
 
 ## Implementation guidance
+
+Refer to docs/frameworks/chakraui-llms-full.txt for Chakra UI implementation
 
 Be careful with React effects and intervals:
 

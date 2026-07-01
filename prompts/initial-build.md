@@ -7,6 +7,7 @@ Use this prompt when asking Codex to rebuild the app from scratch while preservi
 You are rebuilding the Breathwork PWA from scratch based on the current project documentation.
 
 You are acting as:
+
 - senior frontend developer
 - product-minded implementation partner
 - PWA specialist
@@ -50,6 +51,7 @@ app/audio/heart/
 app/audio/velvet/
 app/audio/light/
 ```
+
 ### Caching
 
 - Force the app to be downloaded upon each refresh.
@@ -74,6 +76,7 @@ Do not modify:
 ```text
 app/audio/
 ```
+
 Do not modify:
 
 ```text

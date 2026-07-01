@@ -9,7 +9,9 @@ The engine should feel calm.
 ## Current Implementation
 
 ### When no breathwork is running
+
 When no breathwork is running, the BC only contains:
+
 - The currently selected breathing pattern name
 - The selected breathing pattern text below the breathing pattern name.
 For example:
@@ -19,6 +21,7 @@ Box breathing
 - The BC also contains a button to start the breathwork.
 
 ### When a breathwork is running
+
 When we start a breathwork the BC becomes full screen. The breathing coach uses a 3-zone full-screen layout:
 
 1. Top zone (fixed height): session stats (duration + completed breaths) and header controls. The mute button from the header should also be displayed.

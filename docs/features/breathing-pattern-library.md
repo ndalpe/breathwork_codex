@@ -5,6 +5,7 @@
 Provide a library of predefined breathing pattern.
 
 ## Current Implementation
+
 The library contains the most commun breathing patterns. Each pattern is described by a short explanation of the purpose of the breathing pattern.
 
 The library is accessed through the burger menu. It should be the first item in the BM.

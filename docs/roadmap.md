@@ -1,6 +1,7 @@
 # Roadmap
 
 ## Phase 1 – Core (done)
+
 - Create the app with minimal set of features.
 - Possibility to choose breathing pattern.
 - Possibility to choose between voices.
@@ -13,6 +14,7 @@
 - Add multi-language support for the voices
 
 ## Phase 2 – Immersion
+
 - Add "I am" meditation on exhale.
 - Crossfade audio
 - Background ambient sound
@@ -25,6 +27,7 @@
 - Bring intention to breathwork, Ganesha, Kali, Shiva
 
 ## Phase 3 – Intelligence
+
 - Adaptive breathing patterns
 - Session tracking
 - Personalized pacing

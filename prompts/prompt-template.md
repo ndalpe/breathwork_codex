@@ -7,6 +7,7 @@ Use this prompt when asking Codex to implement a new feature in the Breathwork P
 You are helping me continue the Breathwork PWA project.
 
 You are acting as:
+
 - senior frontend developer
 - product-minded implementation partner
 - careful refactoring assistant

@@ -1,24 +1,24 @@
 # Audio Guidance
 
-  ## Goal
+## Goal
 
   Provide spoken breathwork guidance during an active session.
 
-  ## Audio files
+## Audio files
 
-  Audio files are stored by selected voice.
-  Use the existing MP3 files from the selected voice folder:
+Audio files are stored by selected voice.
+Use the existing MP3 files from the selected voice folder:
 
-  - `app/audio/velvet/`
-  - `app/audio/heart/`
-  - `app/audio/light/`
+- `app/audio/velvet/`
+- `app/audio/heart/`
+- `app/audio/light/`
 
-  Each folder contains:
+Each folder contains:
 
-  - `inhale.mp3`
-  - `exhale.mp3`
-  - `hold.mp3`
-  - `one.mp3` through `thirty.mp3`
+- `inhale.mp3`
+- `exhale.mp3`
+- `hold.mp3`
+- `one.mp3` through `thirty.mp3`
 
 Do not generate new audio files.
 
@@ -39,20 +39,20 @@ Do not generate new audio files.
 
 Example for a 4-second inhale:
 
-  - second 4: play `inhale.mp3`
-  - second 3: play `three.mp3`
-  - second 2: play `two.mp3`
-  - second 1: play `one.mp3`
+- second 4: play `inhale.mp3`
+- second 3: play `three.mp3`
+- second 2: play `two.mp3`
+- second 1: play `one.mp3`
 
 Example for a 7-second hold:
 
-  - second 7: play `hold.mp3`
-  - second 6: play `six.mp3`
-  - second 5: play `five.mp3`
-  - second 4: play `four.mp3`
-  - second 3: play `three.mp3`
-  - second 2: play `two.mp3`
-  - second 1: play `one.mp3`
+- second 7: play `hold.mp3`
+- second 6: play `six.mp3`
+- second 5: play `five.mp3`
+- second 4: play `four.mp3`
+- second 3: play `three.mp3`
+- second 2: play `two.mp3`
+- second 1: play `one.mp3`
 
 ## Timing requirements
 
