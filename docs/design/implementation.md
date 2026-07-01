@@ -25,15 +25,14 @@ Use this file to translate app design decisions into Chakra UI implementation ch
 
 ## Color Mode
 
-- Use Chakra semantic tokens and color mode utilities instead of hard-coding light and dark values in components.
-- Wrap isolated light or dark sections with Chakra color mode helpers only when the design requires a forced appearance.
-- The app should default to dark mode.
+- The app must default to dark mode across the frontend and PWA shell.
+- Set Chakra's default color mode or forced appearance to `dark`.
 - Use Chakra color mode support rather than manually hard-coding dark styles in components.
-- If color mode customization is configured, set the default theme to `dark`.
-- Avoid relying on light-mode-only token values.
-- Use Chakra UI's built-in `blue` color palette as the primary app palette.
+- Use Chakra UI's built-in `blue` color palette as the primary `colorPalette`.
 - Prefer `colorPalette="blue"` for primary Chakra components.
-- For app-specific styling, expose blue through semantic tokens such as `accent`, `accent.strong`, and `accent.subtle`.
+- Use Chakra semantic tokens for backgrounds, text, borders, focus, selection, accent states, and status colors.
+- Avoid relying on light-mode-only token values.
+- Do not implement the dark theme with scattered hard-coded component colors.
 
 ## Composition
 
@@ -49,11 +48,26 @@ Use this file to translate app design decisions into Chakra UI implementation ch
 ## Theme Tokens
 
 - Blue is the primary app color.
-- Define the app's main blue through Chakra tokens.
-- Expose project-level semantic tokens for primary UI roles, such as:
+- Define app-specific semantic tokens instead of using raw blue values in components.
+- App-level semantic tokens should include:
+  - `bg`
+  - `bg.panel`
+  - `bg.muted`
+  - `fg`
+  - `fg.muted`
+  - `border`
   - `accent`
   - `accent.strong`
   - `accent.subtle`
   - `focus`
   - `selection`
-- Components should consume semantic tokens, not raw blue color values.
+- The `accent`, `focus`, and `selection` tokens should derive from Chakra UI's built-in `blue` palette.
+- Components should consume semantic tokens or `colorPalette="blue"`, not raw color values.
+
+## PWA Theme
+
+- The PWA shell must match the app's dark mode theme.
+- Set `app/manifest.json` `theme_color` to a dark blue or neutral dark color aligned with the Chakra dark theme.
+- Set `app/manifest.json` `background_color` to the app's dark background color.
+- Set the HTML `<meta name="theme-color">` value in `app/index.html` to the same dark theme color used by the manifest.
+- Keep the service worker no-cache behavior unchanged.
