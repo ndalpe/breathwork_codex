@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#f7f4ef" />
+  <meta name="theme-color" content="#0f172a" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
@@ -22,19 +22,19 @@
   </script>
   <style>
     :root {
-      color-scheme: light;
-      --app-bg: #f7f4ef;
-      --app-panel: #fffdfa;
-      --app-panel-muted: #eee8df;
-      --app-fg: #1f2320;
-      --app-muted: #626a64;
-      --app-border: #d8d0c4;
-      --app-accent: #2f756c;
-      --app-accent-strong: #225b54;
-      --app-danger: #b3261e;
-      --app-danger-bg: #fff0ee;
-      --app-focus: #287d73;
-      --app-shadow: 0 18px 50px rgba(47, 39, 30, 0.12);
+      color-scheme: dark;
+      --app-bg: #0f172a;
+      --app-panel: #111827;
+      --app-panel-muted: #1e293b;
+      --app-fg: #f8fafc;
+      --app-muted: #cbd5e1;
+      --app-border: #334155;
+      --app-accent: #60a5fa;
+      --app-accent-strong: #3b82f6;
+      --app-danger: #fca5a5;
+      --app-danger-bg: #450a0a;
+      --app-focus: #93c5fd;
+      --app-shadow: 0 24px 70px rgba(2, 6, 23, 0.46);
     }
 
     html,
@@ -99,6 +99,7 @@
       IconButton,
       Stack,
       Text,
+      Theme,
       VStack,
       createSystem,
       defaultConfig,
@@ -121,32 +122,21 @@
 
     const system = createSystem(defaultConfig, defineConfig({
       theme: {
-        tokens: {
-          colors: {
-            cream: { value: "#f7f4ef" },
-            surface: { value: "#fffdfa" },
-            surfaceMuted: { value: "#eee8df" },
-            ink: { value: "#1f2320" },
-            mutedInk: { value: "#626a64" },
-            line: { value: "#d8d0c4" },
-            breath: { value: "#2f756c" },
-            breathStrong: { value: "#225b54" },
-            danger: { value: "#b3261e" },
-            dangerBg: { value: "#fff0ee" }
-          }
-        },
         semanticTokens: {
           colors: {
-            bg: { value: "{colors.cream}" },
-            "bg.panel": { value: "{colors.surface}" },
-            "bg.muted": { value: "{colors.surfaceMuted}" },
-            fg: { value: "{colors.ink}" },
-            "fg.muted": { value: "{colors.mutedInk}" },
-            border: { value: "{colors.line}" },
-            accent: { value: "{colors.breath}" },
-            "accent.strong": { value: "{colors.breathStrong}" },
-            "fg.error": { value: "{colors.danger}" },
-            "bg.error": { value: "{colors.dangerBg}" }
+            bg: { value: "{colors.gray.950}" },
+            "bg.panel": { value: "{colors.gray.900}" },
+            "bg.muted": { value: "{colors.gray.800}" },
+            fg: { value: "{colors.gray.50}" },
+            "fg.muted": { value: "{colors.gray.300}" },
+            border: { value: "{colors.gray.700}" },
+            accent: { value: "{colors.blue.400}" },
+            "accent.strong": { value: "{colors.blue.500}" },
+            "accent.subtle": { value: "{colors.blue.950}" },
+            focus: { value: "{colors.blue.300}" },
+            selection: { value: "{colors.blue.700}" },
+            "fg.error": { value: "{colors.red.300}" },
+            "bg.error": { value: "{colors.red.950}" }
           }
         },
         textStyles: {
@@ -170,6 +160,7 @@
         recipes: {
           button: {
             base: {
+              colorPalette: "blue",
               borderRadius: "999px",
               fontWeight: "800",
               minH: "44px"
@@ -542,11 +533,10 @@
           },
             React.createElement(Button, {
               className: "focus-ring",
-              bg: "accent",
-              color: "white",
+              colorPalette: "blue",
               h: "52px",
               onClick: () => setActivePanel("patterns"),
-              _hover: { bg: "accent.strong" }
+              variant: "solid"
             }, "Breathing pattern library"),
             React.createElement(CustomPattern, {
               customErrors,
@@ -791,13 +781,12 @@
         }, pattern.description),
         React.createElement(Button, {
           className: "focus-ring",
-          bg: "accent",
-          color: "white",
+          colorPalette: "blue",
           h: "56px",
           mt: "9",
           onClick: onStart,
           px: "12",
-          _hover: { bg: "accent.strong" }
+          variant: "solid"
         }, "Start")
       );
     }
@@ -863,12 +852,11 @@
           ),
           React.createElement(Button, {
             className: "focus-ring",
-            bg: "accent",
-            color: "white",
+            colorPalette: "blue",
             h: "52px",
             onClick: onApply,
+            variant: "solid",
             w: "100%",
-            _hover: { bg: "accent.strong" }
           }, "Use this custom pattern")
         )
       );
@@ -1054,9 +1042,9 @@
         ),
         selected && React.createElement(Box, {
           alignItems: "center",
-          bg: "accent",
+          bg: "blue.solid",
           borderRadius: "999px",
-          color: "white",
+          color: "blue.contrast",
           display: "flex",
           flex: "0 0 auto",
           h: "28px",
@@ -1067,7 +1055,13 @@
     }
 
     createRoot(document.getElementById("root")).render(
-      React.createElement(ChakraProvider, { value: system }, React.createElement(App))
+      React.createElement(ChakraProvider, { value: system },
+        React.createElement(Theme, {
+          appearance: "dark",
+          colorPalette: "blue",
+          hasBackground: false
+        }, React.createElement(App))
+      )
     );
 
     if ("serviceWorker" in navigator) {
