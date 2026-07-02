@@ -67,7 +67,17 @@ Use this file to translate app design decisions into Chakra UI implementation ch
 ## PWA Theme
 
 - The PWA shell must match the app's dark mode theme.
+- Chakra tokens should be used everywhere Chakra is available.
 - Set `app/manifest.json` `theme_color` to a dark blue or neutral dark color aligned with the Chakra dark theme.
 - Set `app/manifest.json` `background_color` to the app's dark background color.
 - Set the HTML `<meta name="theme-color">` value in `app/index.html` to the same dark theme color used by the manifest.
 - Keep the service worker no-cache behavior unchanged.
+  - Some browser/PWA surfaces cannot reference Chakra tokens directly, including:
+    - `app/manifest.json` `theme_color`
+    - `app/manifest.json` `background_color`
+    - `app/index.html` `<meta name="theme-color">`
+    - pre-Chakra CSS fallback variables in `app/index.html`
+  - When a literal hex value is required for browser/PWA metadata or pre-Chakra CSS, use the exact hex value of a Chakra built-in token.
+  - Prefer Chakra built-in dark neutral tokens for shell backgrounds, such as `gray.950`, and document the token name next to the hex value in code when practical.
+  - Do not introduce custom one-off shell colors that are not mapped to Chakra's built-in palette.
+  - Keep the service worker no-cache behavior unchanged.

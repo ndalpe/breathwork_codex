@@ -17,6 +17,7 @@
 - Use `colorPalette="blue"` for reusable Chakra component variants when the component represents a primary or selected action.
 - Avoid light-mode fallback styling unless explicitly needed for accessibility or browser compatibility.
 - Keep contrast WCAG-compliant against dark backgrounds.
+- Any required literal color value outside Chakra, such as PWA metadata or pre-Chakra CSS fallback, must match the exact hex value of a Chakra built-in token.
 
 ## Spacing
 
