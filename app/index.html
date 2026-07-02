@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#0f172a" />
+  <!-- Chakra gray.950 -->
+  <meta name="theme-color" content="#111111" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
@@ -23,18 +24,17 @@
   <style>
     :root {
       color-scheme: dark;
-      --app-bg: #0f172a;
-      --app-panel: #111827;
-      --app-panel-muted: #1e293b;
-      --app-fg: #f8fafc;
-      --app-muted: #cbd5e1;
-      --app-border: #334155;
-      --app-accent: #60a5fa;
-      --app-accent-strong: #3b82f6;
-      --app-danger: #fca5a5;
-      --app-danger-bg: #450a0a;
-      --app-focus: #93c5fd;
-      --app-shadow: 0 24px 70px rgba(2, 6, 23, 0.46);
+      --app-bg: #111111; /* Chakra gray.950 */
+      --app-panel: #18181b; /* Chakra gray.900 */
+      --app-panel-muted: #27272a; /* Chakra gray.800 */
+      --app-fg: #fafafa; /* Chakra gray.50 */
+      --app-muted: #d4d4d8; /* Chakra gray.300 */
+      --app-border: #3f3f46; /* Chakra gray.700 */
+      --app-accent: #60a5fa; /* Chakra blue.400 */
+      --app-accent-strong: #3b82f6; /* Chakra blue.500 */
+      --app-danger: #fca5a5; /* Chakra red.300 */
+      --app-danger-bg: #1f0808; /* Chakra red.950 */
+      --app-focus: #a3cfff; /* Chakra blue.300 */
     }
 
     html,
@@ -685,7 +685,7 @@
               border: "1px solid",
               borderColor: "border",
               borderRadius: "999px",
-              boxShadow: "var(--app-shadow)",
+              boxShadow: "xl",
               display: "flex",
               flexDirection: "column",
               h: { base: "min(62vw, 310px)", md: "340px" },
@@ -742,7 +742,7 @@
         border: "1px solid",
         borderColor: "border",
         borderRadius: "28px",
-        boxShadow: "var(--app-shadow)",
+        boxShadow: "xl",
         direction: "column",
         justify: "center",
         minH: { base: "430px", md: "520px" },
