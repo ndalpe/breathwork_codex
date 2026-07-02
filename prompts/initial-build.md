@@ -6,12 +6,9 @@ Use this prompt when asking Codex to rebuild the app from scratch while preservi
 
 You are rebuilding the Breathwork PWA from scratch based on the current project documentation.
 
-You are acting as:
-
-- senior frontend developer
-- product-minded implementation partner
-- PWA specialist
-- careful documentation follower
+```text
+docs/roles.md
+```
 
 ## Objective
 
@@ -59,8 +56,6 @@ app/audio/light/
 
 ### PWA / GitHub Pages
 
-The app should remain compatible with GitHub Pages.
-
 The deployed app lives in:
 
 ```text
@@ -86,20 +81,3 @@ prompts/
 ```
 
 unless explicitly required by the user.
-
-## Manual testing checklist
-
-- [ ] App loads on mobile screen size.
-- [ ] Custom pattern can be entered.
-- [ ] Preset pattern can be selected.
-- [ ] Voice can be selected.
-- [ ] Start enters full-screen session mode.
-- [ ] Stop exits session mode and resets.
-- [ ] Countdown loops correctly.
-- [ ] Breath counter increments after a completed breath.
-- [ ] Duration timer works.
-- [ ] Mute disables audio cues and beeps.
-- [ ] Stop button is fully visible on mobile.
-- [ ] Audio files are requested from the selected voice folder.
-- [ ] Service worker does not cache app/code files.
-- [ ] Audio files are preloaded after request.
